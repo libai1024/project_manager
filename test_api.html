@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>测试归档项目 API</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>测试归档项目 API</h1>
+    <button onclick="testAPI()">测试 API</button>
+    <div id="result"></div>
+
+    <script>
+        // 从 localStorage 获取 token（如果存在）
+        const token = localStorage.getItem('token');
+        
+        // 创建 axios 实例
+        const axiosInstance = axios.create({
+            baseURL: 'http://localhost:8000/api',
+            timeout: 10000,
+        });
+
+        // 请求拦截器
+        axiosInstance.interceptors.request.use(
+            (config) => {
+                console.log('[Test] 请求拦截器执行');
+                console.log('[Test] URL:', config.url);
+                console.log('[Test] 原始 headers:', config.headers);
+                
+                if (token) {
+                    const tokenStr = String(token).trim();
+                    if (tokenStr.length > 0) {
+                        const headerValue = 'Bearer ' + tokenStr;
+                        
+                        // 确保 headers 对象存在
+                        if (!config.headers) {
+                            config.headers = {};
+                        }
+                        
+                        // 设置 Authorization header
+                        config.headers['Authorization'] = headerValue;
+                        config.headers['authorization'] = headerValue;
+                        
+                        console.log('[Test] Token 已设置:', headerValue.substring(0, 30) + '...');
+                        console.log('[Test] 设置后的 headers:', config.headers);
+                    } else {
+                        console.warn('[Test] Token 为空');
+                    }
+                } else {
+                    console.warn('[Test] 未找到 token');
+                }
+                
+                return config;
+            },
+            (error) => {
+                console.error('[Test] 请求拦截器错误:', error);
+                return Promise.reject(error);
+            }
+        );
+
+        // 响应拦截器
+        axiosInstance.interceptors.response.use(
+            (response) => {
+                console.log('[Test] 响应成功:', response);
+                return response.data;
+            },
+            (error) => {
+                console.error('[Test] 响应错误:', error);
+                if (error.response) {
+                    console.error('[Test] 错误状态码:', error.response.status);
+                    console.error('[Test] 错误数据:', error.response.data);
+                    console.error('[Test] 请求配置:', error.config);
+                    console.error('[Test] 请求 headers:', error.config?.headers);
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>测试中...</p>';
+            
+            console.log('=== 开始测试 ===');
+            console.log('Token from localStorage:', token ? token.substring(0, 30) + '...' : 'null');
+            
+            try {
+                const response = await axiosInstance.get('/archived-projects/', {
+                    params: {
+                        skip: 0,
+                        limit: 12
+                    }
+                });
+                
+                console.log('响应数据:', response);
+                resultDiv.innerHTML = `
+                    <h2>成功！</h2>
+                    <p>状态码: 200</p>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('请求失败:', error);
+                resultDiv.innerHTML = `
+                    <h2>失败</h2>
+                    <p>错误: ${error.message}</p>
+                    <pre>${JSON.stringify(error.response?.data || error, null, 2)}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+
+

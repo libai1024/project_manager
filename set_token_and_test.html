@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 Token 并测试 API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        button {
+            background: #409eff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #66b1ff;
+        }
+        button.success {
+            background: #67c23a;
+        }
+        button.danger {
+            background: #f56c6c;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .success {
+            background: #f0f9ff;
+            border: 1px solid #67c23a;
+            color: #333;
+        }
+        .error {
+            background: #fef0f0;
+            border: 1px solid #f56c6c;
+            color: #333;
+        }
+        .info {
+            background: #f4f4f5;
+            border: 1px solid #909399;
+            color: #333;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status-ok {
+            background: #67c23a;
+            color: white;
+        }
+        .status-error {
+            background: #f56c6c;
+            color: white;
+        }
+        .instructions {
+            background: #e6f7ff;
+            border-left: 4px solid #409eff;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #409eff;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Token 设置和 API 测试工具</h1>
+        
+        <div class="instructions">
+            <h3>使用说明：</h3>
+            <ol>
+                <li>在下方输入框中输入你的 Bearer Token</li>
+                <li>点击"设置 Token 到 LocalStorage"按钮</li>
+                <li>点击"测试 API"按钮验证 token 是否有效</li>
+                <li>如果测试成功，刷新你的前端应用页面</li>
+            </ol>
+        </div>
+        
+        <div class="section">
+            <h2>1. Token 设置</h2>
+            <label>Bearer Token:</label>
+            <textarea id="tokenInput" placeholder="输入你的 Bearer token（不需要包含 'Bearer ' 前缀）">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc2NzUxOTg4MH0.XZkpt0TMHnVv1dAyLSyDPJS-BPaBKF7WuUDi3ehyVwg</textarea>
+            
+            <button onclick="setToken()">✅ 设置 Token 到 LocalStorage</button>
+            <button onclick="checkToken()" class="success">🔍 检查当前 Token</button>
+            <button onclick="clearToken()" class="danger">🗑️ 清除 Token</button>
+            
+            <div id="tokenResult"></div>
+        </div>
+        
+        <div class="section">
+            <h2>2. API 测试</h2>
+            <button onclick="testAPI()">🚀 测试归档项目 API</button>
+            <button onclick="testWithFetch()">🌐 使用 Fetch 测试</button>
+            <button onclick="testWithAxios()">📡 使用 Axios 测试</button>
+            
+            <div id="apiResult"></div>
+        </div>
+        
+        <div class="section">
+            <h2>3. 当前状态</h2>
+            <div id="statusInfo"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+        
+        function setToken() {
+            const tokenInput = document.getElementById('tokenInput').value.trim();
+            if (!tokenInput) {
+                showResult('tokenResult', '❌ Token 不能为空', 'error');
+                return;
+            }
+            
+            // 移除可能存在的 'Bearer ' 前缀
+            const token = tokenInput.replace(/^Bearer\s+/i, '');
+            
+            localStorage.setItem('token', token);
+            showResult('tokenResult', `✅ Token 已设置到 LocalStorage\nToken 长度: ${token.length}\nToken 预览: ${token.substring(0, 50)}...`, 'success');
+            updateStatus();
+        }
+        
+        function checkToken() {
+            const token = getToken();
+            if (token) {
+                showResult('tokenResult', `✅ Token 存在\nToken 长度: ${token.length}\nToken 预览: ${token.substring(0, 50)}...`, 'success');
+            } else {
+                showResult('tokenResult', '❌ LocalStorage 中未找到 token', 'error');
+            }
+            updateStatus();
+        }
+        
+        function clearToken() {
+            localStorage.removeItem('token');
+            showResult('tokenResult', '✅ Token 已清除', 'success');
+            updateStatus();
+        }
+        
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+        
+        function updateStatus() {
+            const token = getToken();
+            const statusDiv = document.getElementById('statusInfo');
+            statusDiv.innerHTML = `
+                <div class="result info">
+                    <strong>LocalStorage Token:</strong> ${token ? '✅ 存在' : '❌ 不存在'}<br>
+                    ${token ? `Token 长度: ${token.length}<br>Token 预览: ${token.substring(0, 50)}...` : ''}
+                </div>
+            `;
+        }
+        
+        async function testAPI() {
+            const token = getToken();
+            if (!token) {
+                showResult('apiResult', '❌ 请先设置 Token', 'error');
+                return;
+            }
+            
+            showResult('apiResult', '⏳ 正在测试 API...', 'info');
+            
+            try {
+                const url = `${API_BASE}/archived-projects/?skip=0&limit=12`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                const statusClass = response.ok ? 'status-ok' : 'status-error';
+                
+                if (response.ok) {
+                    showResult('apiResult', `
+                        <span class="status ${statusClass}">${response.status} OK</span>
+                        ✅ API 测试成功！
+                        
+                        <strong>响应数据:</strong>
+                        ${JSON.stringify(data, null, 2)}
+                        
+                        <strong>数据条数:</strong> ${Array.isArray(data) ? data.length : 'N/A'}
+                    `, 'success');
+                } else {
+                    showResult('apiResult', `
+                        <span class="status ${statusClass}">${response.status} ${response.statusText}</span>
+                        ❌ API 测试失败
+                        
+                        <strong>错误信息:</strong>
+                        ${JSON.stringify(data, null, 2)}
+                    `, 'error');
+                }
+            } catch (error) {
+                showResult('apiResult', `
+                    ❌ 请求失败
+                    <strong>错误:</strong> ${error.message}
+                `, 'error');
+            }
+        }
+        
+        async function testWithFetch() {
+            const token = getToken();
+            if (!token) {
+                showResult('apiResult', '❌ 请先设置 Token', 'error');
+                return;
+            }
+            
+            showResult('apiResult', '⏳ 使用 Fetch API 测试...', 'info');
+            
+            try {
+                const url = `${API_BASE}/archived-projects/?skip=0&limit=12`;
+                console.log('Fetch URL:', url);
+                console.log('Fetch Headers:', {
+                    'Authorization': `Bearer ${token.substring(0, 30)}...`,
+                    'Content-Type': 'application/json'
+                });
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Fetch Response Status:', response.status);
+                console.log('Fetch Response Headers:', Object.fromEntries(response.headers.entries()));
+                
+                const data = await response.json();
+                console.log('Fetch Response Data:', data);
+                
+                const statusClass = response.ok ? 'status-ok' : 'status-error';
+                showResult('apiResult', `
+                    <span class="status ${statusClass}">${response.status} ${response.statusText}</span>
+                    ${response.ok ? '✅' : '❌'} Fetch API 测试${response.ok ? '成功' : '失败'}
+                    
+                    <strong>响应数据:</strong>
+                    ${JSON.stringify(data, null, 2)}
+                    
+                    <strong>控制台日志:</strong> 请查看浏览器控制台 (F12) 获取详细信息
+                `, response.ok ? 'success' : 'error');
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                showResult('apiResult', `
+                    ❌ Fetch 请求失败
+                    <strong>错误:</strong> ${error.message}
+                    <strong>控制台:</strong> 请查看浏览器控制台获取详细信息
+                `, 'error');
+            }
+        }
+        
+        async function testWithAxios() {
+            const token = getToken();
+            if (!token) {
+                showResult('apiResult', '❌ 请先设置 Token', 'error');
+                return;
+            }
+            
+            showResult('apiResult', '⏳ 使用 Axios 测试...', 'info');
+            
+            try {
+                const url = `${API_BASE}/archived-projects/`;
+                console.log('Axios URL:', url);
+                console.log('Axios Config:', {
+                    params: { skip: 0, limit: 12 },
+                    headers: {
+                        'Authorization': `Bearer ${token.substring(0, 30)}...`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const response = await axios.get(url, {
+                    params: {
+                        skip: 0,
+                        limit: 12
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Axios Response:', response);
+                
+                showResult('apiResult', `
+                    <span class="status status-ok">${response.status} OK</span>
+                    ✅ Axios 测试成功！
+                    
+                    <strong>响应数据:</strong>
+                    ${JSON.stringify(response.data, null, 2)}
+                    
+                    <strong>数据条数:</strong> ${Array.isArray(response.data) ? response.data.length : 'N/A'}
+                    
+                    <strong>控制台日志:</strong> 请查看浏览器控制台 (F12) 获取详细信息
+                `, 'success');
+            } catch (error) {
+                console.error('Axios Error:', error);
+                const status = error.response?.status;
+                const statusClass = status ? (status === 200 ? 'status-ok' : 'status-error') : 'status-error';
+                
+                showResult('apiResult', `
+                    <span class="status ${statusClass}">${status || 'Error'}</span>
+                    ❌ Axios 测试失败
+                    
+                    <strong>错误信息:</strong>
+                    ${error.response ? JSON.stringify(error.response.data, null, 2) : error.message}
+                    
+                    <strong>请求配置:</strong>
+                    ${error.config ? JSON.stringify({
+                        url: error.config.url,
+                        method: error.config.method,
+                        headers: error.config.headers,
+                        params: error.config.params
+                    }, null, 2) : 'N/A'}
+                    
+                    <strong>控制台日志:</strong> 请查看浏览器控制台获取详细信息
+                `, 'error');
+            }
+        }
+        
+        // 页面加载时检查状态
+        window.onload = function() {
+            updateStatus();
+            checkToken();
+        };
+    </script>
+</body>
+</html>
+

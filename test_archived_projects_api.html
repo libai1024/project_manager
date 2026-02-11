@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>归档项目 API 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        button {
+            background: #409eff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #66b1ff;
+        }
+        button:disabled {
+            background: #c0c4cc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background: #f0f9ff;
+            border: 1px solid #67c23a;
+            color: #333;
+        }
+        .error {
+            background: #fef0f0;
+            border: 1px solid #f56c6c;
+            color: #333;
+        }
+        .info {
+            background: #f4f4f5;
+            border: 1px solid #909399;
+            color: #333;
+        }
+        .status-code {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status-200 {
+            background: #67c23a;
+            color: white;
+        }
+        .status-401 {
+            background: #f56c6c;
+            color: white;
+        }
+        .status-other {
+            background: #e6a23c;
+            color: white;
+        }
+        .header-list {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .header-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .header-item:last-child {
+            border-bottom: none;
+        }
+        .header-key {
+            font-weight: bold;
+            color: #409eff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f5f7fa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>归档项目 API 测试页面</h1>
+    
+    <div class="container">
+        <div class="section">
+            <label>API 基础 URL:</label>
+            <input type="text" id="baseUrl" value="http://localhost:8000/api" />
+        </div>
+        
+        <div class="section">
+            <label>Token (Bearer Token):</label>
+            <textarea id="token" placeholder="输入 Bearer token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc2NzUxOTg4MH0.XZkpt0TMHnVv1dAyLSyDPJS-BPaBKF7WuUDi3ehyVwg</textarea>
+        </div>
+        
+        <div class="section">
+            <label>请求参数:</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <label>Skip:</label>
+                    <input type="number" id="skip" value="0" />
+                </div>
+                <div>
+                    <label>Limit:</label>
+                    <input type="number" id="limit" value="12" />
+                </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <label>Search (可选):</label>
+                <input type="text" id="search" placeholder="搜索关键词" />
+            </div>
+        </div>
+        
+        <div class="section">
+            <button onclick="testWithFetch()">使用 Fetch API 测试</button>
+            <button onclick="testWithAxios()">使用 Axios 测试</button>
+            <button onclick="testWithXHR()">使用 XMLHttpRequest 测试</button>
+            <button onclick="clearResults()">清除结果</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>测试结果</h2>
+        <div id="results"></div>
+    </div>
+    
+    <div class="container">
+        <h2>LocalStorage Token 检查</h2>
+        <div id="localStorageInfo"></div>
+        <button onclick="checkLocalStorage()">检查 LocalStorage</button>
+        <button onclick="setTokenToLocalStorage()">设置 Token 到 LocalStorage</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function getBaseUrl() {
+            return document.getElementById('baseUrl').value.trim();
+        }
+        
+        function getToken() {
+            return document.getElementById('token').value.trim();
+        }
+        
+        function getParams() {
+            const skip = document.getElementById('skip').value;
+            const limit = document.getElementById('limit').value;
+            const search = document.getElementById('search').value.trim();
+            
+            const params = new URLSearchParams();
+            params.append('skip', skip);
+            params.append('limit', limit);
+            if (search) {
+                params.append('search', search);
+            }
+            
+            return params.toString();
+        }
+        
+        function addResult(title, content, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            resultDiv.innerHTML = `
+                <strong>${title} (${timestamp})</strong>
+                <div style="margin-top: 10px;">${content}</div>
+            `;
+            
+            resultsDiv.insertBefore(resultDiv, resultsDiv.firstChild);
+        }
+        
+        function formatHeaders(headers) {
+            if (!headers) return '无';
+            if (headers instanceof Headers) {
+                const obj = {};
+                headers.forEach((value, key) => {
+                    obj[key] = value;
+                });
+                return formatHeaders(obj);
+            }
+            if (typeof headers === 'object') {
+                return Object.entries(headers).map(([key, value]) => 
+                    `<div class="header-item"><span class="header-key">${key}:</span> ${value}</div>`
+                ).join('');
+            }
+            return String(headers);
+        }
+        
+        function getStatusClass(status) {
+            if (status === 200) return 'status-200';
+            if (status === 401) return 'status-401';
+            return 'status-other';
+        }
+        
+        // 使用 Fetch API 测试
+        async function testWithFetch() {
+            const baseUrl = getBaseUrl();
+            const token = getToken();
+            const params = getParams();
+            const url = `${baseUrl}/archived-projects/?${params}`;
+            
+            addResult('Fetch API 测试', `准备请求: ${url}`, 'info');
+            
+            try {
+                const headers = {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                };
+                
+                addResult('请求头', `
+                    <div class="header-list">${formatHeaders(headers)}</div>
+                `, 'info');
+                
+                const startTime = Date.now();
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: headers,
+                    credentials: 'include'
+                });
+                
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                const responseText = await response.text();
+                let responseData;
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch (e) {
+                    responseData = responseText;
+                }
+                
+                const statusClass = getStatusClass(response.status);
+                const resultType = response.ok ? 'success' : 'error';
+                
+                addResult('Fetch API 响应', `
+                    <div>
+                        <span class="status-code ${statusClass}">${response.status} ${response.statusText}</span>
+                        <span>耗时: ${duration}ms</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>响应头:</strong>
+                        <div class="header-list">${formatHeaders(Object.fromEntries(response.headers.entries()))}</div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>响应数据:</strong>
+                        <pre>${JSON.stringify(responseData, null, 2)}</pre>
+                    </div>
+                `, resultType);
+                
+            } catch (error) {
+                addResult('Fetch API 错误', `
+                    <strong>错误信息:</strong> ${error.message}<br>
+                    <strong>错误堆栈:</strong><br>
+                    <pre>${error.stack}</pre>
+                `, 'error');
+            }
+        }
+        
+        // 使用 Axios 测试
+        async function testWithAxios() {
+            const baseUrl = getBaseUrl();
+            const token = getToken();
+            const params = getParams();
+            const url = `${baseUrl}/archived-projects/`;
+            
+            addResult('Axios 测试', `准备请求: ${url}`, 'info');
+            
+            try {
+                const config = {
+                    params: {
+                        skip: document.getElementById('skip').value,
+                        limit: document.getElementById('limit').value,
+                        search: document.getElementById('search').value.trim() || undefined
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                addResult('请求配置', `
+                    <div class="header-list">${formatHeaders(config.headers)}</div>
+                    <div style="margin-top: 10px;"><strong>参数:</strong> ${JSON.stringify(config.params, null, 2)}</div>
+                `, 'info');
+                
+                const startTime = Date.now();
+                const response = await axios.get(url, config);
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                const statusClass = getStatusClass(response.status);
+                
+                addResult('Axios 响应', `
+                    <div>
+                        <span class="status-code ${statusClass}">${response.status} ${response.statusText}</span>
+                        <span>耗时: ${duration}ms</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>请求头 (实际发送):</strong>
+                        <div class="header-list">${formatHeaders(response.config.headers)}</div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>响应数据:</strong>
+                        <pre>${JSON.stringify(response.data, null, 2)}</pre>
+                    </div>
+                `, 'success');
+                
+            } catch (error) {
+                const status = error.response?.status;
+                const statusClass = status ? getStatusClass(status) : 'status-other';
+                
+                addResult('Axios 错误', `
+                    <div>
+                        ${status ? `<span class="status-code ${statusClass}">${status} ${error.response?.statusText || ''}</span>` : ''}
+                        <span>错误: ${error.message}</span>
+                    </div>
+                    ${error.response ? `
+                        <div style="margin-top: 10px;">
+                            <strong>响应数据:</strong>
+                            <pre>${JSON.stringify(error.response.data, null, 2)}</pre>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <strong>请求配置:</strong>
+                            <pre>${JSON.stringify({
+                                url: error.config?.url,
+                                method: error.config?.method,
+                                headers: error.config?.headers,
+                                params: error.config?.params
+                            }, null, 2)}</pre>
+                        </div>
+                    ` : ''}
+                    <div style="margin-top: 10px;">
+                        <strong>错误堆栈:</strong><br>
+                        <pre>${error.stack}</pre>
+                    </div>
+                `, 'error');
+            }
+        }
+        
+        // 使用 XMLHttpRequest 测试
+        function testWithXHR() {
+            const baseUrl = getBaseUrl();
+            const token = getToken();
+            const params = getParams();
+            const url = `${baseUrl}/archived-projects/?${params}`;
+            
+            addResult('XMLHttpRequest 测试', `准备请求: ${url}`, 'info');
+            
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                
+                const headers = {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                };
+                
+                addResult('请求头', `
+                    <div class="header-list">${formatHeaders(headers)}</div>
+                `, 'info');
+                
+                const startTime = Date.now();
+                
+                xhr.onload = function() {
+                    const endTime = Date.now();
+                    const duration = endTime - startTime;
+                    
+                    let responseData;
+                    try {
+                        responseData = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        responseData = xhr.responseText;
+                    }
+                    
+                    const statusClass = getStatusClass(xhr.status);
+                    const resultType = xhr.status >= 200 && xhr.status < 300 ? 'success' : 'error';
+                    
+                    addResult('XMLHttpRequest 响应', `
+                        <div>
+                            <span class="status-code ${statusClass}">${xhr.status} ${xhr.statusText}</span>
+                            <span>耗时: ${duration}ms</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <strong>响应头:</strong>
+                            <div class="header-list">${formatHeaders(xhr.getAllResponseHeaders())}</div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <strong>响应数据:</strong>
+                            <pre>${JSON.stringify(responseData, null, 2)}</pre>
+                        </div>
+                    `, resultType);
+                    
+                    resolve(xhr);
+                };
+                
+                xhr.onerror = function() {
+                    addResult('XMLHttpRequest 错误', `
+                        <strong>网络错误</strong><br>
+                        <strong>状态:</strong> ${xhr.readyState}<br>
+                        <strong>状态码:</strong> ${xhr.status}
+                    `, 'error');
+                    reject(xhr);
+                };
+                
+                xhr.send();
+            });
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        function checkLocalStorage() {
+            const token = localStorage.getItem('token');
+            const info = {
+                'token存在': token ? '是' : '否',
+                'token值': token ? (token.substring(0, 50) + '...') : '无',
+                'token长度': token ? token.length : 0,
+                '所有localStorage键': Object.keys(localStorage).join(', ')
+            };
+            
+            document.getElementById('localStorageInfo').innerHTML = `
+                <div class="result info">
+                    <pre>${JSON.stringify(info, null, 2)}</pre>
+                </div>
+            `;
+        }
+        
+        function setTokenToLocalStorage() {
+            const token = getToken();
+            if (token) {
+                localStorage.setItem('token', token);
+                addResult('LocalStorage 操作', `Token 已设置到 localStorage`, 'success');
+                checkLocalStorage();
+            } else {
+                addResult('LocalStorage 操作', `Token 为空，无法设置`, 'error');
+            }
+        }
+        
+        // 页面加载时检查 localStorage
+        window.onload = function() {
+            checkLocalStorage();
+        };
+    </script>
+</body>
+</html>
+
