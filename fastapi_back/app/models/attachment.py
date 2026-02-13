@@ -1,3 +1,8 @@
+"""
+附件数据模型（ORM + DTO）
+
+包含数据库表定义和DTO。
+"""
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, TYPE_CHECKING
 from datetime import datetime
@@ -10,6 +15,7 @@ if TYPE_CHECKING:
 
 
 class AttachmentType(str, Enum):
+    """附件类型"""
     REQUIREMENT = "需求"
     PROPOSAL = "开题报告"
     DRAFT = "初稿"
@@ -17,39 +23,59 @@ class AttachmentType(str, Enum):
     OTHER = "其他"
 
 
-class AttachmentBase(SQLModel):
+class Attachment(SQLModel, table=True):
+    """附件表"""
+    __tablename__ = "attachment"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
     project_id: Optional[int] = Field(default=None, foreign_key="project.id", description="所属项目ID")
     historical_project_id: Optional[int] = Field(default=None, foreign_key="historicalproject.id", description="所属历史项目ID")
-    file_path: str
-    file_name: str
-    file_type: str = Field(default=AttachmentType.OTHER)
-    description: Optional[str] = None
+    file_path: str = Field(description="文件存储路径")
+    file_name: str = Field(description="文件名")
+    file_type: str = Field(default="其他", description="文件类型")
+    description: Optional[str] = Field(default=None, description="文件描述")
     folder_id: Optional[int] = Field(default=None, foreign_key="attachmentfolder.id", description="所属文件夹ID")
-
-
-class Attachment(AttachmentBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    
+
     # 关系
     project: Optional["Project"] = Relationship(back_populates="attachments")
     historical_project: Optional["HistoricalProject"] = Relationship(back_populates="attachments")
     folder: Optional["AttachmentFolder"] = Relationship(back_populates="attachments")
 
 
+# DTO类（保持向后兼容）
+class AttachmentBase(SQLModel):
+    """附件基础模型"""
+    file_name: str
+    file_type: str = "其他"
+    description: Optional[str] = None
+    folder_id: Optional[int] = None
+
+
 class AttachmentCreate(AttachmentBase):
-    pass
-
-
-class AttachmentRead(AttachmentBase):
-    id: int
-    created_at: datetime
-    folder_name: Optional[str] = None  # 文件夹名称
+    """创建附件"""
+    file_path: str
+    project_id: Optional[int] = None
+    historical_project_id: Optional[int] = None
 
 
 class AttachmentUpdate(SQLModel):
+    """更新附件"""
     file_name: Optional[str] = None
     file_type: Optional[str] = None
     description: Optional[str] = None
     folder_id: Optional[int] = None
+
+
+class AttachmentRead(AttachmentBase):
+    """读取附件"""
+    id: int
+    project_id: Optional[int] = None
+    historical_project_id: Optional[int] = None
+    file_path: str
+    folder_name: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 

@@ -10,22 +10,24 @@ from app.core.dependencies import get_current_active_user
 from app.services.step_template_service import StepTemplateService
 from app.models.user import User
 from app.models.step_template import StepTemplateCreate, StepTemplateUpdate, StepTemplateRead
+from app.api.responses import ApiResponse, success
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=List[StepTemplateRead])
+@router.get("/", response_model=ApiResponse[List[StepTemplateRead]])
 async def list_templates(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
 ):
     """获取所有模板"""
     template_service = StepTemplateService(session)
-    return template_service.list_templates(current_user.id)
+    templates = template_service.list_templates(current_user.id)
+    return success(templates)
 
 
-@router.post("/", response_model=StepTemplateRead)
+@router.post("/", response_model=ApiResponse[StepTemplateRead])
 async def create_template(
     template_data: StepTemplateCreate,
     session: Session = Depends(get_session),
@@ -33,10 +35,11 @@ async def create_template(
 ):
     """创建模板"""
     template_service = StepTemplateService(session)
-    return template_service.create_template(template_data, current_user.id)
+    template = template_service.create_template(template_data, current_user.id)
+    return success(template, msg="模板创建成功")
 
 
-@router.get("/{template_id}", response_model=StepTemplateRead)
+@router.get("/{template_id}", response_model=ApiResponse[StepTemplateRead])
 async def get_template(
     template_id: int,
     session: Session = Depends(get_session),
@@ -44,10 +47,11 @@ async def get_template(
 ):
     """获取模板详情"""
     template_service = StepTemplateService(session)
-    return template_service.get_template(template_id)
+    template = template_service.get_template(template_id)
+    return success(template)
 
 
-@router.put("/{template_id}", response_model=StepTemplateRead)
+@router.put("/{template_id}", response_model=ApiResponse[StepTemplateRead])
 async def update_template(
     template_id: int,
     template_data: StepTemplateUpdate,
@@ -56,10 +60,11 @@ async def update_template(
 ):
     """更新模板"""
     template_service = StepTemplateService(session)
-    return template_service.update_template(template_id, template_data, current_user.id)
+    template = template_service.update_template(template_id, template_data, current_user.id)
+    return success(template, msg="模板更新成功")
 
 
-@router.delete("/{template_id}")
+@router.delete("/{template_id}", response_model=ApiResponse[None])
 async def delete_template(
     template_id: int,
     session: Session = Depends(get_session),
@@ -68,10 +73,10 @@ async def delete_template(
     """删除模板"""
     template_service = StepTemplateService(session)
     template_service.delete_template(template_id, current_user.id)
-    return {"message": "Template deleted successfully"}
+    return success(msg="模板删除成功")
 
 
-@router.post("/ensure-default")
+@router.post("/ensure-default", response_model=ApiResponse[StepTemplateRead])
 async def ensure_default_template(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
@@ -79,5 +84,6 @@ async def ensure_default_template(
     """确保默认模板存在（初始化时调用）"""
     template_service = StepTemplateService(session)
     template = template_service.ensure_default_template()
-    return template_service.get_template(template.id)
+    result = template_service.get_template(template.id)
+    return success(result)
 

@@ -644,5 +644,161 @@ const handleImageError = (e: Event) => {
 .empty-logs {
   padding: 40px 0;
 }
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+  .logs-card {
+    position: static;
+    max-height: none;
+    height: auto;
+  }
+
+  .logs-card :deep(.el-card__header) {
+    padding: 12px;
+  }
+
+  .logs-card :deep(.el-card__body) {
+    padding: 12px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .card-header > span {
+    font-size: 14px;
+  }
+
+  .card-header > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .card-header .el-button {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .project-logs-timeline {
+    padding-left: 24px;
+    max-height: none;
+  }
+
+  .log-node {
+    left: -24px;
+    width: 16px;
+    height: 16px;
+    font-size: 8px;
+    margin-left: -8px;
+  }
+
+  .log-line {
+    left: -18px;
+    top: 16px;
+  }
+
+  .log-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .log-action {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .action-text {
+    font-size: 12px;
+  }
+
+  .log-time {
+    font-size: 10px;
+  }
+
+  .log-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .log-user {
+    font-size: 11px;
+  }
+
+  .log-description {
+    font-size: 12px;
+  }
+
+  .log-details {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .log-detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .detail-label {
+    font-size: 10px;
+    min-width: auto;
+  }
+
+  .completion-note {
+    font-size: 11px;
+  }
+
+  .photo-grid {
+    gap: 4px;
+  }
+
+  .photo-item {
+    border-radius: 2px;
+  }
+
+  .file-list-item {
+    padding: 6px;
+  }
+
+  .file-name {
+    font-size: 11px;
+  }
+
+  .log-delete-btn {
+    opacity: 1;
+  }
+
+  .empty-logs {
+    padding: 20px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-logs-timeline {
+    padding-left: 18px;
+  }
+
+  .log-node {
+    left: -18px;
+    width: 14px;
+    height: 14px;
+    font-size: 7px;
+    margin-left: -7px;
+  }
+
+  .log-line {
+    left: -13px;
+  }
+
+  .photo-grid-photo-grid-2,
+  .photo-grid-photo-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 </style>
 

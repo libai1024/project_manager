@@ -89,6 +89,18 @@ request.interceptors.response.use(
     if (response.config.responseType === 'blob') {
       return response.data
     }
+    // 统一响应格式处理：提取 data 字段
+    // 后端返回格式：{ code: number, msg: string, data: any }
+    const data = response.data
+    if (data && typeof data === 'object' && 'code' in data && 'data' in data) {
+      // 如果 code 不是 200，当作错误处理
+      if (data.code !== 200) {
+        const error: any = new Error(data.msg || '请求失败')
+        error.response = { data: { detail: data.msg }, status: data.code }
+        return Promise.reject(error)
+      }
+      return data.data
+    }
     return response.data
   },
   (error) => {

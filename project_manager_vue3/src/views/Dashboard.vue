@@ -956,28 +956,83 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .dashboard {
     padding: 12px;
+    height: auto;
+    min-height: calc(100vh - 60px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .stats-row {
+    margin-bottom: 12px;
+    margin-left: -6px !important;
+    margin-right: -6px !important;
+  }
+
+  .stats-row .el-col {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    margin-bottom: 8px;
   }
 
   .stat-card {
     padding: 12px;
-    height: 70px;
+    height: auto;
+    min-height: 70px;
   }
 
   .stat-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .stat-icon :deep(.el-icon) {
+    font-size: 18px !important;
   }
 
   .stat-value {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .stat-label {
     font-size: 11px;
   }
 
+  .content-row {
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .content-row .el-col {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-bottom: 12px;
+  }
+
+  .todo-card-content,
+  .revenue-card-content {
+    height: auto;
+    min-height: 300px;
+  }
+
+  .todo-card-content :deep(.el-card__body),
+  .revenue-card-content :deep(.el-card__body) {
+    height: auto;
+    min-height: 200px;
+  }
+
   .chart-container {
-    height: 150px;
+    height: 180px;
+  }
+
+  .revenue-list {
+    max-height: 200px;
+    overflow-y: auto;
   }
 
   .revenue-item {
@@ -994,6 +1049,95 @@ onUnmounted(() => {
 
   .platform-percentage {
     font-size: 14px;
+  }
+
+  /* 表格优化 */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .todo-table :deep(.el-table__body-wrapper) {
+    overflow-x: auto;
+  }
+
+  .todo-table :deep(.el-table__cell) {
+    padding: 8px 4px !important;
+  }
+
+  .todo-description {
+    font-size: 11px;
+    -webkit-line-clamp: 1;
+  }
+
+  .action-buttons {
+    flex-wrap: nowrap;
+    gap: 2px;
+  }
+
+  .action-buttons .el-button {
+    padding: 4px !important;
+  }
+
+  /* 隐藏不重要的列 */
+  .todo-table :deep(.el-table__body) .el-table__cell:nth-child(2),
+  .todo-table :deep(.el-table__header) .el-table__cell:nth-child(2) {
+    display: none;
+  }
+
+  .step-range-tag {
+    display: none;
+  }
+
+  .todo-project-header {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 8px;
+  }
+
+  .stats-row {
+    margin-left: -4px !important;
+    margin-right: -4px !important;
+  }
+
+  .stats-row .el-col {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    margin-bottom: 6px;
+  }
+
+  .stat-card {
+    padding: 10px;
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .card-header {
+    font-size: 13px;
+  }
+
+  .chart-container {
+    height: 150px;
+  }
+
+  .todo-card-content,
+  .revenue-card-content {
+    min-height: 250px;
   }
 }
 </style>

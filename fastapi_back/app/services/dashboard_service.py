@@ -1,14 +1,18 @@
 """
 Dashboard服务层
+
+重构后使用 utils/constants 中的常量。
 """
 from typing import List, Dict, Optional
 from datetime import datetime
 from sqlmodel import Session
+
 from app.repositories.project_repository import ProjectRepository
 from app.repositories.step_repository import StepRepository
 from app.repositories.platform_repository import PlatformRepository
-from app.models.project import ProjectStep, StepStatus
+from app.models.project import ProjectStep
 from app.models.platform import Platform
+from app.utils.constants import StepStatus
 from pydantic import BaseModel
 
 

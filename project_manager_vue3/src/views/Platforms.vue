@@ -285,15 +285,113 @@ onMounted(() => {
 @media (max-width: 768px) {
   .platforms-page {
     padding: 12px;
+    min-height: auto;
+  }
+
+  .platforms-card :deep(.el-card__body) {
+    padding: 12px !important;
   }
 
   .card-header {
     flex-direction: column;
     align-items: stretch;
+    gap: 8px;
+  }
+
+  .page-title {
+    font-size: 15px;
+    text-align: center;
   }
 
   .add-btn {
     width: 100%;
+  }
+
+  .table-wrapper {
+    margin: 0 -12px;
+    padding: 0 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .platforms-table {
+    margin-top: 0;
+    min-width: 500px;
+  }
+
+  .platforms-table :deep(.el-table__cell) {
+    padding: 8px 4px !important;
+    font-size: 12px !important;
+  }
+
+  .platform-name-cell {
+    font-size: 12px;
+  }
+
+  .platform-icon {
+    font-size: 14px;
+  }
+
+  .time-cell {
+    font-size: 11px;
+  }
+
+  .action-buttons {
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+
+  .action-buttons .el-button {
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+
+  /* 对话框样式 */
+  .platforms-page :deep(.el-dialog) {
+    width: 94% !important;
+    margin-top: 5vh !important;
+  }
+
+  .platforms-page :deep(.el-dialog__header) {
+    padding: 12px !important;
+  }
+
+  .platforms-page :deep(.el-dialog__body) {
+    padding: 12px !important;
+  }
+
+  .platforms-page :deep(.el-dialog__footer) {
+    padding: 12px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .platforms-page :deep(.el-dialog__footer .el-button) {
+    width: 100%;
+    margin: 0;
+  }
+
+  .platforms-page :deep(.el-form-item__label) {
+    font-size: 12px;
+    float: none;
+    text-align: left;
+    padding-bottom: 4px;
+    width: 100% !important;
+  }
+
+  .platforms-page :deep(.el-form-item__content) {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .platforms-page {
+    padding: 8px;
+  }
+
+  .platforms-table {
+    min-width: 400px;
   }
 }
 </style>

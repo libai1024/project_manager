@@ -1864,26 +1864,298 @@ watch(activeMenu, (newMenu) => {
 @media (max-width: 768px) {
   .settings-page {
     padding: 12px;
+    min-height: auto;
+  }
+
+  .settings-page :deep(.el-card__body) {
+    padding: 12px !important;
+  }
+
+  .settings-layout {
+    margin: 0 !important;
+  }
+
+  .settings-layout .el-col {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
   .settings-sidebar {
     margin-bottom: 12px;
   }
 
+  .sidebar-card :deep(.el-card__body) {
+    padding: 8px !important;
+  }
+
+  .settings-menu {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    padding: 4px 0;
+  }
+
+  .settings-menu :deep(.el-menu-item) {
+    display: inline-flex;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 16px;
+    margin-bottom: 0;
+    margin-right: 4px;
+    flex-shrink: 0;
+  }
+
+  .settings-menu :deep(.el-menu-item span) {
+    font-size: 13px;
+  }
+
+  .page-title {
+    font-size: 15px;
+  }
+
   .section-header {
     flex-direction: column;
     gap: 12px;
     align-items: stretch;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .section-title h3 {
+    font-size: 16px;
+  }
+
+  .section-desc {
+    font-size: 12px;
   }
 
   .template-item {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .template-header {
+    margin-bottom: 8px;
+  }
+
+  .template-name {
+    font-size: 14px;
+  }
+
+  .template-description {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .template-steps-preview {
+    margin-bottom: 8px;
+  }
+
+  .template-meta {
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
   }
 
   .template-actions {
     width: 100%;
     justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .template-actions .el-button {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  /* 插件设置移动端优化 */
+  .plugin-info {
+    padding: 12px;
+  }
+
+  .plugin-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .plugin-icon {
+    font-size: 20px;
+  }
+
+  .plugin-name {
+    font-size: 15px;
+  }
+
+  .plugin-description {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .plugin-status-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .status-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .status-actions .el-button {
+    flex: 1;
+  }
+
+  .projects-container {
+    max-height: 300px;
+  }
+
+  .project-item {
+    padding: 10px 12px;
+  }
+
+  .project-title {
+    font-size: 13px;
+  }
+
+  .project-meta {
+    font-size: 11px;
+    flex-wrap: wrap;
+  }
+
+  .setting-tip {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+
+  .plugin-features {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .feature-item {
+    font-size: 12px;
+  }
+
+  /* Token管理移动端优化 */
+  .token-duration-content {
+    gap: 16px;
+  }
+
+  .duration-label {
+    font-size: 13px;
+  }
+
+  .duration-hint {
+    font-size: 11px;
+  }
+
+  .duration-input-group {
+    flex-wrap: wrap;
+  }
+
+  .duration-input-group .el-input-number {
+    width: 100% !important;
+  }
+
+  .duration-actions {
+    flex-direction: column;
+  }
+
+  .duration-actions .el-button {
+    width: 100%;
+  }
+
+  .duration-tip {
+    font-size: 12px;
+    padding: 10px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .info-label {
+    min-width: auto;
+    font-size: 12px;
+  }
+
+  .info-value {
+    font-size: 13px;
+  }
+
+  /* 对话框优化 */
+  .settings-page :deep(.el-dialog) {
+    width: 96% !important;
+    margin-top: 3vh !important;
+  }
+
+  .settings-page :deep(.el-dialog__header) {
+    padding: 12px !important;
+  }
+
+  .settings-page :deep(.el-dialog__body) {
+    padding: 12px !important;
+    max-height: 70vh;
+  }
+
+  .settings-page :deep(.el-dialog__footer) {
+    padding: 12px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .settings-page :deep(.el-dialog__footer .el-button) {
+    width: 100%;
+    margin: 0;
+  }
+
+  /* 图标选择器 */
+  .icon-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-height: 250px;
+  }
+
+  .icon-option {
+    padding: 12px 8px;
+  }
+
+  .icon-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-page {
+    padding: 8px;
+  }
+
+  .settings-menu :deep(.el-menu-item) {
+    padding: 0 12px;
+  }
+
+  .settings-menu :deep(.el-menu-item span) {
+    font-size: 12px;
+  }
+
+  .section-title h3 {
+    font-size: 15px;
+  }
+
+  .template-item {
+    padding: 10px;
+  }
+
+  .projects-container {
+    max-height: 250px;
   }
 }
 

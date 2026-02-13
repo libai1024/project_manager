@@ -1982,5 +1982,109 @@ onUnmounted(() => {
 .list-view {
   width: 100%;
 }
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+  .resource-manager-page {
+    padding: 12px;
+  }
+
+  .resource-manager-page :deep(.el-card__header) {
+    padding: 12px;
+  }
+
+  .resource-manager-page :deep(.el-card__body) {
+    padding: 12px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .header-actions .el-button {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .toolbar :deep(.el-input),
+  .toolbar :deep(.el-select) {
+    width: 100% !important;
+  }
+
+  .view-mode-switch {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .folder-grid,
+  .file-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+  }
+
+  .folder-item,
+  .file-item {
+    padding: 10px;
+  }
+
+  .folder-icon,
+  .file-icon {
+    font-size: 36px;
+  }
+
+  .folder-name,
+  .file-name {
+    font-size: 11px;
+  }
+
+  .context-menu {
+    min-width: 120px;
+  }
+
+  .context-menu-item {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .context-submenu {
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .resource-manager-page {
+    padding: 8px;
+  }
+
+  .folder-grid,
+  .file-grid {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 6px;
+  }
+
+  .folder-icon,
+  .file-icon {
+    font-size: 28px;
+  }
+
+  .folder-name,
+  .file-name {
+    font-size: 10px;
+  }
+}
 </style>
 

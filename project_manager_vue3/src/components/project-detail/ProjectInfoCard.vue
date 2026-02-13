@@ -341,5 +341,108 @@ const handleTagClick = (tag: any) => {
   padding: 8px 20px;
   font-weight: 500;
 }
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+  .project-info-card {
+    margin-bottom: 12px;
+  }
+
+  .project-info-card :deep(.el-card__header) {
+    padding: 12px;
+  }
+
+  .project-info-card :deep(.el-card__body) {
+    padding: 12px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .card-header > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .card-header .el-button {
+    flex: 1;
+    min-width: 80px;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .project-info-card :deep(.el-descriptions) {
+    font-size: 13px;
+  }
+
+  .project-info-card :deep(.el-descriptions__label) {
+    font-size: 12px;
+    padding: 10px 8px;
+    min-width: 70px;
+  }
+
+  .project-info-card :deep(.el-descriptions__content) {
+    font-size: 13px;
+    padding: 10px 8px;
+  }
+
+  .tags-display {
+    gap: 6px;
+  }
+
+  .project-tag {
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 14px;
+    gap: 4px;
+  }
+
+  .tag-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .tag-icon {
+    font-size: 10px;
+  }
+
+  .no-tag-wrapper {
+    padding: 12px;
+  }
+
+  .empty-icon {
+    font-size: 36px;
+  }
+
+  .add-tag-btn {
+    font-size: 12px;
+    padding: 6px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-info-card :deep(.el-descriptions__label) {
+    min-width: 60px;
+    font-size: 11px;
+  }
+
+  .project-info-card :deep(.el-descriptions__content) {
+    font-size: 12px;
+  }
+
+  .card-header .el-button {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .project-tag {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+}
 </style>
 

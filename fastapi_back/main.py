@@ -9,7 +9,7 @@ import logging
 # 首先导入所有模型以确保关系正确建立
 from app.models.user import User
 from app.models.platform import Platform
-from app.models.project import Project, ProjectStep, ProjectReadWithRelations
+from app.models.project import Project, ProjectStep
 from app.models.attachment import Attachment
 from app.models.attachment_folder import AttachmentFolder
 from app.models.todo import Todo
@@ -21,11 +21,15 @@ from app.models.video_playback import VideoPlayback, VideoPlaybackLink, VideoPla
 from app.models.refresh_token import RefreshToken
 from app.models.token_blacklist import TokenBlacklist
 from app.models.login_log import LoginLog
-from app.models.tag import Tag, ProjectTag, HistoricalProjectTag, TagRead
-# 重建模型以解析前向引用（Pydantic 2.x 要求）
-from app.models.platform import PlatformRead
-from app.models.project import ProjectStepRead
+from app.models.tag import Tag, ProjectTag, HistoricalProjectTag
 from app.models.historical_project import HistoricalProjectReadWithRelations
+
+# 导入 Schema（DTO）
+from app.schemas.project import ProjectReadWithRelations, ProjectStepRead
+from app.schemas.platform import PlatformRead
+from app.schemas.tag import TagRead
+
+# 重建模型以解析前向引用（Pydantic 2.x 要求）
 ProjectReadWithRelations.model_rebuild()
 HistoricalProjectReadWithRelations.model_rebuild()
 
@@ -38,12 +42,41 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-# 创建数据库表
-SQLModel.metadata.create_all(engine)
+logger = logging.getLogger(__name__)
+
+
+def run_migrations():
+    """Run database migrations on application startup.
+
+    Uses Alembic for database migrations. Falls back to SQLModel.metadata.create_all
+    if Alembic is not configured or migrations fail (useful for development).
+    """
+    try:
+        from alembic.config import Config
+        from alembic import command
+        import os
+
+        # Check if alembic.ini exists
+        alembic_ini_path = os.path.join(os.path.dirname(__file__), "alembic.ini")
+        if os.path.exists(alembic_ini_path):
+            alembic_cfg = Config(alembic_ini_path)
+            command.upgrade(alembic_cfg, "head")
+            logger.info("Database migrations completed successfully via Alembic")
+        else:
+            logger.warning("alembic.ini not found, falling back to create_all()")
+            SQLModel.metadata.create_all(engine)
+    except Exception as e:
+        logger.warning(f"Could not run Alembic migrations: {e}")
+        logger.info("Falling back to SQLModel.metadata.create_all()")
+        SQLModel.metadata.create_all(engine)
+
+
+# Run database migrations on startup
+run_migrations()
 
 app = FastAPI(
-    title="毕设代做管理系统",
-    description="毕业设计代做项目管理系统API",
+    title="外包项目管理系统",
+    description="外包项目管理系统 API",
     version="1.0.0"
 )
 
@@ -152,7 +185,7 @@ app.include_router(tags.router, prefix="/api/tags", tags=["标签管理"])
 
 @app.get("/")
 async def root():
-    return {"message": "毕设代做管理系统API", "version": "1.0.0"}
+    return {"message": "外包项目管理系统 API", "version": "1.0.0"}
 
 
 @app.get("/health")

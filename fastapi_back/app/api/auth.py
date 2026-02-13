@@ -16,8 +16,8 @@ from app.core.security import (
 from app.core.config import settings
 from app.core.dependencies import get_current_user, get_current_admin_user
 from app.models.user import User, UserCreate, UserRead, UserUpdate, Token
-from app.models.refresh_token import RefreshTokenCreate, RefreshToken
-from app.models.login_log import LoginLogCreate, LoginStatus
+from app.models.refresh_token import RefreshToken, RefreshTokenCreate
+from app.models.login_log import LoginStatus, LoginLogCreate
 from app.models.token_blacklist import TokenBlacklistCreate
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.token_blacklist_repository import TokenBlacklistRepository

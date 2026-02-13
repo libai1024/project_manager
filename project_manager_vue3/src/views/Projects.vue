@@ -186,6 +186,7 @@
       class="create-project-dialog"
       :close-on-click-modal="false"
       @close="resetForm"
+      :fullscreen="isMobile"
     >
       <template #header>
         <div class="dialog-header">
@@ -241,11 +242,12 @@
             </div>
             <div class="form-row">
               <el-form-item label="接单平台" prop="platform_id" class="form-item-half">
-                <el-select 
-                  v-model="form.platform_id" 
-                  placeholder="请选择平台" 
+                <el-select
+                  v-model="form.platform_id"
+                  placeholder="请选择平台"
                   size="large"
                   style="width: 100%"
+                  popper-class="project-dialog-platform-select"
                 >
                   <el-option
                     v-for="platform in platforms"
@@ -1055,11 +1057,22 @@ onMounted(async () => {
 @media (max-width: 768px) {
   .projects-page {
     padding: 12px;
+    min-height: auto;
+  }
+
+  .projects-card :deep(.el-card__body) {
+    padding: 12px !important;
   }
 
   .card-header {
     flex-direction: column;
     align-items: stretch;
+    gap: 8px;
+  }
+
+  .page-title {
+    font-size: 15px;
+    text-align: center;
   }
 
   .add-btn {
@@ -1067,27 +1080,238 @@ onMounted(async () => {
   }
 
   .filter-section {
-    padding: 12px;
+    padding: 10px;
+    margin-bottom: 12px;
   }
 
   .filter-form {
     display: flex;
     flex-direction: column;
+    gap: 8px;
   }
 
   .filter-form .el-form-item {
     margin-right: 0;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     width: 100%;
   }
 
-  .filter-form .el-select {
+  .filter-form .el-form-item__label {
+    font-size: 12px;
+    padding-bottom: 4px;
+  }
+
+  .filter-form .el-select,
+  .filter-form .el-input {
     width: 100% !important;
   }
 
+  .filter-form .el-form-item:last-child {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .filter-form .el-form-item:last-child .el-form-item__content {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .table-wrapper {
+    margin: 0 -12px;
+    padding: 0 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .projects-table {
+    margin-top: 0;
+    min-width: 600px;
+  }
+
+  .projects-table :deep(.el-table__cell) {
+    padding: 8px 4px !important;
+  }
+
+  .project-name-cell {
+    font-size: 12px;
+  }
+
+  .project-icon {
+    font-size: 14px;
+  }
+
+  .money-text {
+    font-size: 12px;
+  }
+
+  .progress-text {
+    font-size: 10px;
+  }
+
   .action-buttons {
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+
+  .action-buttons .el-button {
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+
+  /* 隐藏标签列在移动端 */
+  .projects-table :deep(.el-table__body) .el-table__cell:nth-child(3),
+  .projects-table :deep(.el-table__header) .el-table__cell:nth-child(3) {
+    display: none;
+  }
+
+  /* 对话框样式 */
+  .create-project-dialog :deep(.el-dialog) {
+    margin-top: 0 !important;
+  }
+
+  .create-project-dialog :deep(.el-dialog__header) {
+    padding: 16px !important;
+  }
+
+  .create-project-dialog :deep(.el-dialog__body) {
+    padding: 12px !important;
+    max-height: 70vh;
+  }
+
+  .dialog-header {
     flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .header-icon-wrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .dialog-title {
+    font-size: 16px !important;
+  }
+
+  .dialog-subtitle {
+    font-size: 12px !important;
+  }
+
+  .dialog-body {
+    padding: 0;
+  }
+
+  .form-section {
+    margin-bottom: 16px;
+    padding: 12px;
+  }
+
+  .section-header {
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 13px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-item-half {
+    width: 100% !important;
+  }
+
+  .project-form :deep(.el-form-item__label) {
+    font-size: 12px;
+    padding-bottom: 4px;
+  }
+
+  .project-form :deep(.el-input__inner) {
+    font-size: 14px;
+  }
+
+  /* 上传区域 */
+  .requirement-upload-area :deep(.el-upload-dragger) {
+    padding: 20px 10px !important;
+  }
+
+  .upload-icon {
+    font-size: 32px;
+  }
+
+  .upload-main-text {
+    font-size: 13px;
+  }
+
+  .upload-tip-text {
+    font-size: 11px;
+  }
+
+  /* 插件选择 */
+  .plugins-list {
+    grid-template-columns: 1fr;
+  }
+
+  .plugin-card {
+    padding: 12px;
+  }
+
+  .plugin-icon-wrapper {
+    width: 36px;
+    height: 36px;
+  }
+
+  .plugin-icon {
+    font-size: 18px;
+  }
+
+  .plugin-name {
+    font-size: 13px;
+  }
+
+  .plugin-description {
+    font-size: 11px;
+  }
+
+  .dialog-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dialog-footer .el-button {
     width: 100%;
+    margin: 0;
+  }
+
+  .submit-btn {
+    order: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-page {
+    padding: 8px;
+  }
+
+  .page-title {
+    font-size: 14px;
+  }
+
+  .filter-section {
+    padding: 8px;
+  }
+
+  .form-section {
+    padding: 10px;
+  }
+
+  .projects-table {
+    min-width: 500px;
   }
 }
 

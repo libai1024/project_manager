@@ -327,5 +327,89 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+  .historical-project-detail-page {
+    padding: 12px;
+  }
+
+  .historical-project-detail-page :deep(.el-card__header) {
+    padding: 12px;
+  }
+
+  .historical-project-detail-page :deep(.el-card__body) {
+    padding: 12px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .page-title {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .header-actions .el-button {
+    flex: 1;
+    font-size: 12px;
+  }
+
+  .project-detail {
+    margin-top: 12px;
+  }
+
+  .project-detail :deep(.el-descriptions__label) {
+    font-size: 12px;
+    min-width: 70px;
+  }
+
+  .project-detail :deep(.el-descriptions__content) {
+    font-size: 13px;
+  }
+
+  .project-tags {
+    gap: 6px;
+  }
+
+  .project-tags :deep(.el-tag) {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .historical-project-detail-page {
+    padding: 8px;
+  }
+
+  .header-actions .el-button {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .project-detail :deep(.el-descriptions__label) {
+    font-size: 11px;
+    min-width: 60px;
+  }
+
+  .project-detail :deep(.el-descriptions__content) {
+    font-size: 12px;
+  }
+}
 </style>
 

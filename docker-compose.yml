@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # Backend service
+  backend:
+    build:
+      context: ./fastapi_back
+      dockerfile: Dockerfile
+    container_name: project_manager_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/project_manager.db
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+      - CORS_ALLOW_ALL=${CORS_ALLOW_ALL:-true}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost}
+    volumes:
+      # Bind mounts for data persistence
+      - ./data:/app/data          # Database files
+      - ./uploads:/app/uploads    # Uploaded files
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./project_manager_vue3
+      dockerfile: Dockerfile
+    container_name: project_manager_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  default:
+    name: project_manager_network

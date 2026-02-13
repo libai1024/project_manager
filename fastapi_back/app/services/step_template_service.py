@@ -10,7 +10,7 @@ from app.models.step_template import (
     StepTemplate, StepTemplateItem,
     StepTemplateCreate, StepTemplateUpdate, StepTemplateRead
 )
-from app.models.project import DEFAULT_STEPS
+from app.utils.constants import DEFAULT_STEPS
 
 logger = logging.getLogger(__name__)
 

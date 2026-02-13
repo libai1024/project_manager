@@ -510,4 +510,97 @@ onUnmounted(() => {
 .video-info {
   margin-top: 24px;
 }
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+  .video-watch-page {
+    padding: 12px;
+  }
+
+  .video-player-container {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .video-header {
+    margin-bottom: 12px;
+  }
+
+  .video-title {
+    font-size: 18px;
+  }
+
+  .video-description {
+    font-size: 13px;
+  }
+
+  .video-wrapper {
+    margin-bottom: 12px;
+    border-radius: 4px;
+  }
+
+  .video-info {
+    margin-top: 12px;
+  }
+
+  .video-info :deep(.el-descriptions__label) {
+    font-size: 12px;
+  }
+
+  .video-info :deep(.el-descriptions__content) {
+    font-size: 12px;
+  }
+
+  .error-container {
+    padding: 20px;
+  }
+
+  .error-icon {
+    font-size: 48px;
+  }
+
+  .error-title {
+    font-size: 16px;
+  }
+
+  .error-message {
+    font-size: 13px;
+  }
+
+  .back-button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-watch-page {
+    padding: 8px;
+  }
+
+  .video-player-container {
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  .video-title {
+    font-size: 16px;
+  }
+
+  .video-description {
+    font-size: 12px;
+  }
+
+  .error-container {
+    padding: 16px;
+  }
+
+  .error-icon {
+    font-size: 36px;
+  }
+
+  .error-title {
+    font-size: 14px;
+  }
+}
 </style>

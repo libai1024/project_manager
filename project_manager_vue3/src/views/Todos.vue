@@ -2214,50 +2214,272 @@ onUnmounted(() => {
 
 /* 移动端适配 */
 @media (max-width: 768px) {
+  .todos-page {
+    padding: 12px;
+    height: auto;
+    min-height: calc(100vh - 60px);
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
   .todos-layout {
     flex-direction: column;
+    height: auto;
+    max-height: none;
+    overflow: visible;
   }
-  
+
+  .todos-layout .el-row {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    flex-direction: column;
+  }
+
+  .todos-layout .el-col {
+    height: auto;
+    max-height: none;
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+    margin-bottom: 12px;
+    overflow: visible;
+  }
+
+  .date-selector-col,
+  .todos-detail-col,
+  .calendar-col {
+    padding: 0 !important;
+  }
+
   .date-selector-card,
   .calendar-card,
   .stats-card {
     position: static;
+    height: auto;
+    margin-bottom: 12px;
   }
-  
+
+  .date-selector-card :deep(.el-card__body),
+  .todos-detail-card :deep(.el-card__body) {
+    padding: 12px !important;
+  }
+
   .date-selector {
     display: flex;
     overflow-x: auto;
-    gap: 12px;
-    padding: 10px;
+    gap: 8px;
+    padding: 8px 0;
+    -webkit-overflow-scrolling: touch;
   }
-  
+
   .date-item {
-    min-width: 80px;
+    min-width: 70px;
     margin-bottom: 0;
+    flex-shrink: 0;
   }
-  
+
+  .date-day {
+    font-size: 16px;
+  }
+
+  .calendar-card {
+    order: 3;
+  }
+
+  .calendar-wrapper {
+    padding: 8px 0;
+  }
+
+  .calendar-weekdays {
+    gap: 2px;
+  }
+
+  .weekday {
+    font-size: 10px;
+    padding: 2px;
+  }
+
   .calendar-days {
     gap: 2px;
   }
-  
+
   .calendar-day {
     padding: 2px;
+    min-height: 32px;
   }
-  
+
   .day-number {
-    font-size: 12px;
+    font-size: 11px;
   }
-  
+
+  .day-indicators {
+    font-size: 8px;
+  }
+
+  .indicator-todo,
+  .indicator-completed {
+    font-size: 8px;
+    min-width: 10px;
+    padding: 0 1px;
+  }
+
+  .stats-card {
+    order: 4;
+  }
+
+  .stats-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .stat-item {
+    padding: 8px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .stat-value {
+    font-size: 16px;
+  }
+
+  .todos-detail-col {
+    order: 1;
+  }
+
+  .todos-detail-card {
+    min-height: 300px;
+  }
+
+  .todo-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .todo-header-left {
+    width: 100%;
+  }
+
+  .todo-meta {
+    flex-wrap: wrap;
+  }
+
+  .project-name {
+    font-size: 13px;
+  }
+
+  .step-badge {
+    font-size: 9px;
+  }
+
   .todo-description-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
+  .todo-description {
+    font-size: 12px;
+  }
+
   .todo-actions {
     opacity: 1;
     width: 100%;
     justify-content: flex-end;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .action-btn {
+    padding: 6px 12px;
+  }
+
+  /* 对话框样式 */
+  .todo-detail-dialog :deep(.el-dialog) {
+    width: 96% !important;
+    margin-top: 2vh !important;
+  }
+
+  .todo-detail-dialog :deep(.el-dialog__body) {
+    padding: 12px !important;
+    max-height: 70vh;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .detail-label {
+    min-width: auto;
+    font-size: 12px;
+  }
+
+  .detail-value {
+    font-size: 13px;
+  }
+
+  .photo-grid-3,
+  .photo-grid-4,
+  .photo-grid-5,
+  .photo-grid-6,
+  .photo-grid-7,
+  .photo-grid-8,
+  .photo-grid-9 {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 100%;
+  }
+
+  .file-item {
+    padding: 10px 12px;
+  }
+
+  .file-item span {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .todos-page {
+    padding: 8px;
+  }
+
+  .date-item {
+    min-width: 60px;
+    padding: 8px 10px;
+  }
+
+  .date-day {
+    font-size: 14px;
+  }
+
+  .calendar-day {
+    min-height: 28px;
+  }
+
+  .day-number {
+    font-size: 10px;
+  }
+
+  .stat-item {
+    padding: 6px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+
+  .project-name {
+    font-size: 12px;
+  }
+
+  .todo-description {
+    font-size: 11px;
   }
 }
 

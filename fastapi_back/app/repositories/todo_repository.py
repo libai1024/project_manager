@@ -1,28 +1,30 @@
 """
 待办数据访问层
+
+重构后使用 schemas 中的 DTO。
 """
 from typing import Optional, List
 from sqlmodel import Session, select
 from sqlalchemy import func
 from datetime import datetime, date, timezone, timedelta
 import json
-from app.models.todo import Todo, TodoCreate, TodoUpdate
+
+from app.repositories.base import BaseRepository
+from app.models.todo import Todo
+from app.schemas.todo import TodoCreate, TodoUpdate
 
 
-class TodoRepository:
+class TodoRepository(BaseRepository[Todo]):
     """待办数据访问层"""
-    
+
     @staticmethod
     def _today_local() -> date:
-        """
-        获取本地（北京时间，UTC+8）的今天日期
-        说明：避免服务器使用 UTC 导致的跨天问题
-        """
+        """获取本地（北京时间，UTC+8）的今天日期"""
         return datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=8))).date()
-    
+
     def __init__(self, session: Session):
-        self.session = session
-    
+        super().__init__(session, Todo)
+
     def create(self, todo_data: TodoCreate) -> Todo:
         """创建待办"""
         todo = Todo(
@@ -32,14 +34,7 @@ class TodoRepository:
             step_ids=json.dumps(todo_data.step_ids),
             target_date=todo_data.target_date
         )
-        self.session.add(todo)
-        self.session.commit()
-        self.session.refresh(todo)
-        return todo
-    
-    def get_by_id(self, todo_id: int) -> Optional[Todo]:
-        """根据ID获取待办"""
-        return self.session.get(Todo, todo_id)
+        return super().create(todo)
     
     def list_by_date(self, target_date: date, user_id: Optional[int] = None) -> List[Todo]:
         """获取指定日期的待办列表"""
@@ -106,22 +101,10 @@ class TodoRepository:
     
     def update(self, todo: Todo, update_data: TodoUpdate) -> Todo:
         """更新待办"""
-        if update_data.description is not None:
-            todo.description = update_data.description
-        if update_data.completion_note is not None:
-            todo.completion_note = update_data.completion_note
-        if update_data.is_completed is not None:
-            todo.is_completed = update_data.is_completed
-        if update_data.target_date is not None:
-            todo.target_date = update_data.target_date
-        
-        self.session.add(todo)
-        self.session.commit()
-        self.session.refresh(todo)
-        return todo
-    
-    def delete(self, todo: Todo) -> None:
+        update_dict = update_data.model_dump(exclude_unset=True)
+        return super().update(todo, update_dict)
+
+    def delete(self, todo: Todo) -> bool:
         """删除待办"""
-        self.session.delete(todo)
-        self.session.commit()
+        return super().delete(todo)
 

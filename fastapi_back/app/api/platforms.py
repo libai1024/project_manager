@@ -9,21 +9,23 @@ from app.core.dependencies import get_current_active_user
 from app.services.platform_service import PlatformService
 from app.models.user import User
 from app.models.platform import PlatformRead, PlatformCreate, PlatformUpdate
+from app.api.responses import ApiResponse, success
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[PlatformRead])
+@router.get("/", response_model=ApiResponse[List[PlatformRead]])
 async def list_platforms(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
 ):
     """获取所有平台列表"""
     platform_service = PlatformService(session)
-    return platform_service.list_platforms()
+    platforms = platform_service.list_platforms()
+    return success(platforms)
 
 
-@router.post("/", response_model=PlatformRead)
+@router.post("/", response_model=ApiResponse[PlatformRead])
 async def create_platform(
     platform_data: PlatformCreate,
     session: Session = Depends(get_session),
@@ -31,10 +33,11 @@ async def create_platform(
 ):
     """创建平台"""
     platform_service = PlatformService(session)
-    return platform_service.create_platform(platform_data)
+    platform = platform_service.create_platform(platform_data)
+    return success(platform, msg="平台创建成功")
 
 
-@router.get("/{platform_id}", response_model=PlatformRead)
+@router.get("/{platform_id}", response_model=ApiResponse[PlatformRead])
 async def get_platform(
     platform_id: int,
     session: Session = Depends(get_session),
@@ -42,10 +45,11 @@ async def get_platform(
 ):
     """获取平台详情"""
     platform_service = PlatformService(session)
-    return platform_service.get_platform_by_id(platform_id)
+    platform = platform_service.get_platform_by_id(platform_id)
+    return success(platform)
 
 
-@router.put("/{platform_id}", response_model=PlatformRead)
+@router.put("/{platform_id}", response_model=ApiResponse[PlatformRead])
 async def update_platform(
     platform_id: int,
     platform_data: PlatformUpdate,
@@ -54,10 +58,11 @@ async def update_platform(
 ):
     """更新平台信息"""
     platform_service = PlatformService(session)
-    return platform_service.update_platform(platform_id, platform_data)
+    platform = platform_service.update_platform(platform_id, platform_data)
+    return success(platform, msg="平台更新成功")
 
 
-@router.delete("/{platform_id}")
+@router.delete("/{platform_id}", response_model=ApiResponse[None])
 async def delete_platform(
     platform_id: int,
     session: Session = Depends(get_session),
@@ -66,4 +71,4 @@ async def delete_platform(
     """删除平台"""
     platform_service = PlatformService(session)
     platform_service.delete_platform(platform_id)
-    return {"message": "Platform deleted successfully"}
+    return success(msg="平台删除成功")

@@ -10,6 +10,7 @@ import { useUserStore } from './stores/user'
 import './styles/theme.css'
 import './styles/element-plus-theme.css'
 import './styles/components.css'
+import './styles/mobile.css'
 import './style.css'
 
 const app = createApp(App)

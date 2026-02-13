@@ -295,6 +295,10 @@ onMounted(() => {
   padding: 20px;
 }
 
+.tags-page :deep(.el-card__body) {
+  padding: 16px;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -306,6 +310,7 @@ onMounted(() => {
   align-items: center;
   gap: 20px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .color-preview {
@@ -313,6 +318,139 @@ onMounted(() => {
   height: 30px;
   border-radius: 4px;
   border: 1px solid #dcdfe6;
+}
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+  .tags-page {
+    padding: 12px;
+  }
+
+  .tags-page :deep(.el-card__body) {
+    padding: 12px !important;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .card-header span {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .card-header .el-button {
+    width: 100%;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .filter-section .el-input {
+    width: 100% !important;
+  }
+
+  .filter-section .el-checkbox {
+    margin-top: 4px;
+  }
+
+  /* 表格优化 */
+  .tags-page :deep(.el-table) {
+    font-size: 12px !important;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tags-page :deep(.el-table__cell) {
+    padding: 8px 4px !important;
+  }
+
+  .tags-page :deep(.el-tag) {
+    font-size: 11px !important;
+  }
+
+  .color-preview {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* 隐藏不重要的列 */
+  .tags-page :deep(.el-table__body) .el-table__cell:nth-child(5),
+  .tags-page :deep(.el-table__header) .el-table__cell:nth-child(5) {
+    display: none;
+  }
+
+  /* 操作按钮 */
+  .tags-page :deep(.el-table) .el-button {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+  }
+
+  /* 对话框样式 */
+  .tags-page :deep(.el-dialog) {
+    width: 94% !important;
+    margin-top: 5vh !important;
+  }
+
+  .tags-page :deep(.el-dialog__header) {
+    padding: 12px !important;
+  }
+
+  .tags-page :deep(.el-dialog__body) {
+    padding: 12px !important;
+  }
+
+  .tags-page :deep(.el-dialog__footer) {
+    padding: 12px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tags-page :deep(.el-dialog__footer .el-button) {
+    width: 100%;
+    margin: 0;
+  }
+
+  .tags-page :deep(.el-form-item__label) {
+    font-size: 12px;
+    float: none;
+    text-align: left;
+    padding-bottom: 4px;
+    width: 100% !important;
+  }
+
+  .tags-page :deep(.el-form-item__content) {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tags-page {
+    padding: 8px;
+  }
+
+  .tags-page :deep(.el-table__cell) {
+    padding: 6px 2px !important;
+  }
+
+  .tags-page :deep(.el-tag) {
+    font-size: 10px !important;
+    padding: 0 4px !important;
+  }
+
+  .color-preview {
+    width: 20px;
+    height: 20px;
+  }
 }
 </style>
 

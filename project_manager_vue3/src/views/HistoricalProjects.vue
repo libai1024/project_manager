@@ -502,5 +502,106 @@ onMounted(async () => {
   color: #909399;
   font-size: 12px;
 }
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+  .historical-projects-page {
+    padding: 12px;
+  }
+
+  .projects-card :deep(.el-card__header) {
+    padding: 12px;
+  }
+
+  .projects-card :deep(.el-card__body) {
+    padding: 12px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .page-title {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .header-actions .el-button {
+    width: 100%;
+  }
+
+  .filter-section {
+    margin-bottom: 12px;
+  }
+
+  .filter-form :deep(.el-form-item) {
+    display: block;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .filter-form :deep(.el-select) {
+    width: 100% !important;
+  }
+
+  .filter-form :deep(.el-form-item__label) {
+    display: block;
+    text-align: left;
+    padding-bottom: 4px;
+  }
+
+  .table-wrapper {
+    margin-top: 12px;
+    overflow-x: auto;
+  }
+
+  .projects-table {
+    font-size: 12px;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .projects-table :deep(.el-table__cell) {
+    padding: 8px 4px;
+  }
+
+  .project-name-cell {
+    font-size: 12px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .action-buttons .el-button {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .historical-projects-page {
+    padding: 8px;
+  }
+
+  .projects-table :deep(.el-table__cell) {
+    padding: 6px 2px;
+  }
+
+  .project-tag {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}
 </style>
 

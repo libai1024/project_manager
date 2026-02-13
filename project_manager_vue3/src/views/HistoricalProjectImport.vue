@@ -310,5 +310,96 @@ onMounted(() => {
   gap: 12px;
   margin-top: 40px;
 }
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+  .historical-project-import-page {
+    padding: 12px;
+  }
+
+  .historical-project-import-page :deep(.el-card__header) {
+    padding: 12px;
+  }
+
+  .historical-project-import-page :deep(.el-card__body) {
+    padding: 12px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .header-left {
+    justify-content: center;
+  }
+
+  .page-title {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .import-content {
+    margin-top: 20px;
+  }
+
+  .step-content {
+    margin: 20px 0;
+    min-height: 200px;
+  }
+
+  .filter-form :deep(.el-form-item) {
+    display: block;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .filter-form :deep(.el-select),
+  .filter-form :deep(.el-input) {
+    width: 100% !important;
+  }
+
+  .tip-text {
+    font-size: 12px;
+  }
+
+  .step-actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .step-actions .el-button {
+    width: 100%;
+  }
+
+  /* 表格横向滚动 */
+  .historical-project-import-page :deep(.el-table) {
+    font-size: 12px;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .historical-project-import-page :deep(.el-table__cell) {
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .historical-project-import-page {
+    padding: 8px;
+  }
+
+  .page-title {
+    font-size: 15px;
+  }
+
+  .historical-project-import-page :deep(.el-table__cell) {
+    padding: 6px 2px;
+  }
+}
 </style>
 

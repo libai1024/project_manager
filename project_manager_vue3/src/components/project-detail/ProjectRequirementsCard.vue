@@ -113,5 +113,48 @@ watch(() => props.requirements, checkRequirementsHeight, { immediate: true })
   pointer-events: auto;
   color: #409eff;
 }
+
+/* 移动端样式 */
+@media (max-width: 768px) {
+  .requirements-card {
+    margin-bottom: 12px;
+  }
+
+  .requirements-card :deep(.el-card__header) {
+    padding: 12px;
+  }
+
+  .requirements-card :deep(.el-card__body) {
+    padding: 12px;
+  }
+
+  .requirements-content {
+    max-height: 200px;
+    font-size: 13px;
+  }
+
+  .requirements-content.requirements-collapsed {
+    max-height: 200px;
+  }
+
+  .requirements-expand-overlay {
+    height: 60px;
+  }
+
+  .expand-button {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .requirements-content {
+    font-size: 12px;
+    max-height: 150px;
+  }
+
+  .requirements-content.requirements-collapsed {
+    max-height: 150px;
+  }
+}
 </style>
 

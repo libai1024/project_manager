@@ -1,0 +1,99 @@
+
+============================================================
+开始API测试...
+============================================================
+
+
+--- 健康检查 ---
+[PASS] GET /
+[PASS] GET /health
+
+--- 用户认证 ---
+[PASS] POST /api/auth/login (admin)
+    -> Admin token obtained: eyJhbGciOiJIUzI1NiIs...
+
+--- 用户信息 ---
+[PASS] GET /api/auth/me
+
+--- 平台管理 ---
+[PASS] GET /api/platforms
+[PASS] POST /api/platforms
+
+--- 标签管理 ---
+[PASS] GET /api/tags
+[PASS] POST /api/tags
+
+--- 项目管理 ---
+[PASS] GET /api/projects
+[PASS] POST /api/projects
+[PASS] GET /api/projects/{id}
+[PASS] PUT /api/projects/{id}
+
+--- 项目步骤 ---
+[PASS] POST /api/projects/{id}/steps
+[FAIL] PUT /api/projects/steps/{id}: 状态码 500 != 期望 200, 响应: {'code': 500, 'msg': '服务器内部错误', 'data': None}
+[PASS] POST /api/projects/steps/{id}/toggle-todo
+
+--- Dashboard ---
+[PASS] GET /api/dashboard/stats
+
+--- 用户管理 ---
+[FAIL] GET /api/users: 状态码 500 != 期望 200, 响应: {'code': 500, 'msg': '服务器内部错误', 'data': None}
+
+--- Todo管理 ---
+[PASS] GET /api/todos
+[FAIL] POST /api/todos: 状态码 422 != 期望 200, 响应: {'code': 422, 'msg': '数据验证失败', 'data': None, 'details': [{'field': 'body -> d
+
+--- 步骤模板 ---
+[PASS] GET /api/step-templates
+[PASS] POST /api/step-templates
+
+--- 附件文件夹 ---
+[FAIL] GET /api/attachment-folders: 状态码 404 != 期望 200, 响应: {'detail': 'Not Found'}
+
+--- 项目日志 ---
+[FAIL] GET /api/project-logs/project/{id}: 状态码 500 != 期望 200, 响应: {'code': 500, 'msg': '服务器内部错误', 'data': None}
+
+--- 系统设置 ---
+[PASS] GET /api/system-settings
+
+--- 清理测试数据 ---
+[PASS] DELETE /api/projects/{id}
+[PASS] DELETE /api/tags/{id}
+[PASS] DELETE /api/platforms/{id}
+[PASS] DELETE /api/step-templates/{id}
+
+================================================================================
+                              API测试报告
+================================================================================
+测试时间: 2026-02-13 17:58:59
+总计: 28 个测试
+通过: 23 个
+失败: 5 个
+跳过: 0 个
+
+通过率: 82.1%
+================================================================================
+
+
+失败详情:
+------------------------------------------------------------
+
+[FAIL] PUT /api/projects/steps/{id}
+   错误: 状态码 500 != 期望 200, 响应: {'code': 500, 'msg': '服务器内部错误', 'data': None}
+
+[FAIL] GET /api/users
+   错误: 状态码 500 != 期望 200, 响应: {'code': 500, 'msg': '服务器内部错误', 'data': None}
+
+[FAIL] POST /api/todos
+   错误: 状态码 422 != 期望 200, 响应: {'code': 422, 'msg': '数据验证失败', 'data': None, 'details': [{'field': 'body -> description', 'message': 'Field required', 'type': 'missing'}]}
+
+[FAIL] GET /api/attachment-folders
+   错误: 状态码 404 != 期望 200, 响应: {'detail': 'Not Found'}
+
+[FAIL] GET /api/project-logs/project/{id}
+   错误: 状态码 500 != 期望 200, 响应: {'code': 500, 'msg': '服务器内部错误', 'data': None}
+
+============================================================
+测试完成
+============================================================

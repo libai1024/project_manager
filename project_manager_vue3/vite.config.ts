@@ -26,7 +26,7 @@ export default defineConfig({
             if (process.env.NODE_ENV === 'development') {
               console.log('[Vite Proxy] 📥 Incoming request headers:', Object.keys(req.headers))
               const authHeader = req.headers.authorization || req.headers.Authorization
-              console.log('[Vite Proxy] Authorization header:', authHeader ? authHeader.substring(0, 30) + '...' : 'NOT FOUND')
+              console.log('[Vite Proxy] Authorization header:', authHeader ? String(authHeader).substring(0, 30) + '...' : 'NOT FOUND')
             }
             
             // 确保 Authorization header 被转发（检查多种可能的大小写）

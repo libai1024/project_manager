@@ -1,36 +1,32 @@
 """
 标签数据访问层
+
+重构后使用 schemas 中的 DTO。
 """
 from typing import List, Optional
 from sqlmodel import Session, select, or_
-from app.models.tag import Tag, TagCreate, TagUpdate, ProjectTag, ProjectTagCreate, HistoricalProjectTag, HistoricalProjectTagCreate
+
+from app.repositories.base import BaseRepository
+from app.models.tag import Tag, ProjectTag, HistoricalProjectTag
+from app.schemas.tag import TagCreate, TagUpdate
 
 
-class TagRepository:
+class TagRepository(BaseRepository[Tag]):
     """标签数据访问层"""
-    
+
     def __init__(self, session: Session):
-        self.session = session
-    
+        super().__init__(session, Tag)
+
     def create(self, tag_data: TagCreate, user_id: Optional[int] = None) -> Tag:
         """创建标签"""
         tag_dict = tag_data.model_dump()
         tag_dict['user_id'] = user_id
         tag = Tag(**tag_dict)
-        self.session.add(tag)
-        self.session.commit()
-        self.session.refresh(tag)
-        return tag
-    
-    def get_by_id(self, tag_id: int) -> Optional[Tag]:
-        """根据ID获取标签"""
-        return self.session.get(Tag, tag_id)
-    
+        return super().create(tag)
+
     def get_by_name(self, name: str) -> Optional[Tag]:
         """根据名称获取标签"""
-        return self.session.exec(
-            select(Tag).where(Tag.name == name)
-        ).first()
+        return self.find_one(name=name)
     
     def list_all(self, user_id: Optional[int] = None, include_common: bool = True) -> List[Tag]:
         """获取所有标签（全局共享，不区分用户）"""

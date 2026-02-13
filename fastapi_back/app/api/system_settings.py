@@ -11,12 +11,13 @@ from app.core.dependencies import get_current_active_user, get_current_admin_use
 from app.repositories.system_settings_repository import SystemSettingsRepository
 from app.models.user import User
 from app.models.system_settings import SystemSettingsRead, SystemSettingsUpdate, SystemSettingsIntRead, SystemSettingsIntUpdate
+from app.api.responses import ApiResponse, success
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["系统设置"])
 
 
-@router.get("/historical-project", response_model=Dict[str, bool])
+@router.get("/historical-project", response_model=ApiResponse[Dict[str, bool]])
 async def get_historical_project_settings(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_admin_user)
@@ -24,7 +25,8 @@ async def get_historical_project_settings(
     """获取历史项目功能设置（仅管理员）"""
     settings_repo = SystemSettingsRepository(session)
     try:
-        return settings_repo.get_historical_project_settings()
+        settings = settings_repo.get_historical_project_settings()
+        return success(settings)
     except Exception as e:
         logger.error(f"Error in get_historical_project_settings API: {str(e)}", exc_info=True)
         raise HTTPException(
@@ -33,7 +35,7 @@ async def get_historical_project_settings(
         )
 
 
-@router.put("/historical-project", response_model=Dict[str, bool])
+@router.put("/historical-project", response_model=ApiResponse[Dict[str, bool]])
 async def update_historical_project_settings(
     settings: Dict[str, bool],
     session: Session = Depends(get_session),
@@ -43,7 +45,8 @@ async def update_historical_project_settings(
     settings_repo = SystemSettingsRepository(session)
     try:
         settings_repo.update_historical_project_settings(settings)
-        return settings_repo.get_historical_project_settings()
+        result = settings_repo.get_historical_project_settings()
+        return success(result, msg="设置更新成功")
     except Exception as e:
         logger.error(f"Error in update_historical_project_settings API: {str(e)}", exc_info=True)
         raise HTTPException(
@@ -52,7 +55,7 @@ async def update_historical_project_settings(
         )
 
 
-@router.get("/token-duration", response_model=Dict[str, int])
+@router.get("/token-duration", response_model=ApiResponse[Dict[str, int]])
 async def get_token_duration_settings(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
@@ -60,17 +63,17 @@ async def get_token_duration_settings(
     """获取 Token 持续时间设置（所有用户可读）"""
     settings_repo = SystemSettingsRepository(session)
     from app.core.config import settings as config_settings
-    
+
     access_token_minutes = settings_repo.get_int_value("access_token_expire_minutes", config_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     refresh_token_days = settings_repo.get_int_value("refresh_token_expire_days", config_settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    
-    return {
+
+    return success({
         "access_token_expire_minutes": access_token_minutes,
         "refresh_token_expire_days": refresh_token_days
-    }
+    })
 
 
-@router.put("/token-duration", response_model=Dict[str, int])
+@router.put("/token-duration", response_model=ApiResponse[Dict[str, int]])
 async def update_token_duration_settings(
     settings: Dict[str, int],
     session: Session = Depends(get_session),
@@ -78,11 +81,11 @@ async def update_token_duration_settings(
 ):
     """更新 Token 持续时间设置（仅管理员）"""
     settings_repo = SystemSettingsRepository(session)
-    
+
     # 验证输入值
     access_token_minutes = settings.get("access_token_expire_minutes")
     refresh_token_days = settings.get("refresh_token_expire_days")
-    
+
     if access_token_minutes is not None:
         if access_token_minutes < 1 or access_token_minutes > 1440:  # 1分钟到24小时
             raise HTTPException(
@@ -95,7 +98,7 @@ async def update_token_duration_settings(
             description="Access Token 过期时间（分钟）",
             category="token"
         )
-    
+
     if refresh_token_days is not None:
         if refresh_token_days < 1 or refresh_token_days > 365:  # 1天到1年
             raise HTTPException(
@@ -108,26 +111,26 @@ async def update_token_duration_settings(
             description="Refresh Token 过期时间（天）",
             category="token"
         )
-    
+
     # 返回更新后的值
     from app.core.config import settings as config_settings
     access_token_minutes = settings_repo.get_int_value("access_token_expire_minutes", config_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     refresh_token_days = settings_repo.get_int_value("refresh_token_expire_days", config_settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    
-    return {
+
+    return success({
         "access_token_expire_minutes": access_token_minutes,
         "refresh_token_expire_days": refresh_token_days
-    }
+    }, msg="Token设置更新成功")
 
 
-@router.get("/plugin-settings", response_model=Dict[str, List[int]])
+@router.get("/plugin-settings", response_model=ApiResponse[Dict[str, List[int]]])
 async def get_plugin_settings(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
 ):
     """获取插件设置（所有用户可读，全局共享）"""
     settings_repo = SystemSettingsRepository(session)
-    
+
     # 插件设置键名
     plugin_keys = {
         "graduation": "graduationPluginEnabledProjects",
@@ -135,7 +138,7 @@ async def get_plugin_settings(
         "parts": "partsPluginEnabledProjects",
         "video-playback": "videoPlaybackPluginEnabledProjects"
     }
-    
+
     result = {}
     for plugin_type, key in plugin_keys.items():
         project_ids = settings_repo.get_value(key, [])
@@ -143,11 +146,11 @@ async def get_plugin_settings(
             result[plugin_type] = project_ids
         else:
             result[plugin_type] = []
-    
-    return result
+
+    return success(result)
 
 
-@router.put("/plugin-settings", response_model=Dict[str, List[int]])
+@router.put("/plugin-settings", response_model=ApiResponse[Dict[str, List[int]]])
 async def update_plugin_settings(
     settings: Dict[str, List[int]],
     session: Session = Depends(get_session),
@@ -155,7 +158,7 @@ async def update_plugin_settings(
 ):
     """更新插件设置（所有用户可写，全局共享）"""
     settings_repo = SystemSettingsRepository(session)
-    
+
     # 插件设置键名和描述
     plugin_configs = {
         "graduation": ("graduationPluginEnabledProjects", "毕业设计插件启用的项目ID列表"),
@@ -163,7 +166,7 @@ async def update_plugin_settings(
         "parts": ("partsPluginEnabledProjects", "元器件清单插件启用的项目ID列表"),
         "video-playback": ("videoPlaybackPluginEnabledProjects", "视频回放插件启用的项目ID列表")
     }
-    
+
     # 更新每个插件的设置
     for plugin_type, project_ids in settings.items():
         if plugin_type in plugin_configs:
@@ -177,7 +180,7 @@ async def update_plugin_settings(
                     description=description,
                     category="plugin"
                 )
-    
+
     # 返回更新后的所有设置
     result = {}
     for plugin_type, (key, _) in plugin_configs.items():
@@ -186,11 +189,11 @@ async def update_plugin_settings(
             result[plugin_type] = project_ids
         else:
             result[plugin_type] = []
-    
-    return result
+
+    return success(result, msg="插件设置更新成功")
 
 
-@router.put("/{key}", response_model=SystemSettingsRead)
+@router.put("/{key}", response_model=ApiResponse[SystemSettingsRead])
 async def update_setting(
     key: str,
     data: SystemSettingsUpdate,
@@ -201,7 +204,7 @@ async def update_setting(
     settings_repo = SystemSettingsRepository(session)
     try:
         setting = settings_repo.update(key, data.value)
-        return SystemSettingsRead(
+        result = SystemSettingsRead(
             id=setting.id,
             key=setting.key,
             value=data.value,  # 直接使用传入的布尔值
@@ -210,6 +213,7 @@ async def update_setting(
             created_at=setting.created_at,
             updated_at=setting.updated_at
         )
+        return success(result, msg="设置更新成功")
     except Exception as e:
         logger.error(f"Error in update_setting API: {str(e)}", exc_info=True)
         raise HTTPException(
@@ -218,7 +222,7 @@ async def update_setting(
         )
 
 
-@router.get("/{key}", response_model=SystemSettingsRead)
+@router.get("/{key}", response_model=ApiResponse[SystemSettingsRead])
 async def get_setting(
     key: str,
     session: Session = Depends(get_session),
@@ -242,8 +246,8 @@ async def get_setting(
             bool_value = str(value).lower() in ('true', '1', 'yes')
     except (json.JSONDecodeError, TypeError):
         bool_value = str(setting.value).lower() in ('true', '1', 'yes')
-    
-    return SystemSettingsRead(
+
+    result = SystemSettingsRead(
         id=setting.id,
         key=setting.key,
         value=bool_value,
@@ -252,9 +256,10 @@ async def get_setting(
         created_at=setting.created_at,
         updated_at=setting.updated_at
     )
+    return success(result)
 
 
-@router.get("/", response_model=List[SystemSettingsRead])
+@router.get("/", response_model=ApiResponse[List[SystemSettingsRead]])
 async def get_all_settings(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
@@ -274,7 +279,7 @@ async def get_all_settings(
                     bool_value = str(value).lower() in ('true', '1', 'yes')
             except (json.JSONDecodeError, TypeError):
                 bool_value = str(s.value).lower() in ('true', '1', 'yes')
-            
+
             result.append(SystemSettingsRead(
                 id=s.id,
                 key=s.key,
@@ -284,7 +289,7 @@ async def get_all_settings(
                 created_at=s.created_at,
                 updated_at=s.updated_at
             ))
-        return result
+        return success(result)
     except Exception as e:
         logger.error(f"Error in get_all_settings API: {str(e)}", exc_info=True)
         raise HTTPException(

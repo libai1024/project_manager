@@ -1,17 +1,22 @@
 """
 附件数据访问层
+
+重构后继承 BaseRepository。
 """
 from typing import Optional, List
 from sqlmodel import Session, select
+
+from app.repositories.base import BaseRepository
 from app.models.attachment import Attachment
+from app.schemas.attachment import AttachmentCreate
 
 
-class AttachmentRepository:
+class AttachmentRepository(BaseRepository[Attachment]):
     """附件数据访问层"""
-    
+
     def __init__(self, session: Session):
-        self.session = session
-    
+        super().__init__(session, Attachment)
+
     def create(
         self,
         project_id: Optional[int] = None,
@@ -32,39 +37,12 @@ class AttachmentRepository:
             description=description,
             folder_id=folder_id
         )
-        self.session.add(attachment)
-        self.session.commit()
-        self.session.refresh(attachment)
-        return attachment
-    
-    def get_by_id(self, attachment_id: int) -> Optional[Attachment]:
-        """根据ID获取附件"""
-        return self.session.get(Attachment, attachment_id)
-    
+        return super().create(attachment)
+
     def list_by_project(self, project_id: int) -> List[Attachment]:
         """获取项目的所有附件"""
-        return list(self.session.exec(
-            select(Attachment).where(Attachment.project_id == project_id)
-        ).all())
-    
+        return self.find_many(project_id=project_id)
+
     def list_by_historical_project(self, historical_project_id: int) -> List[Attachment]:
         """获取历史项目的所有附件"""
-        return list(self.session.exec(
-            select(Attachment).where(Attachment.historical_project_id == historical_project_id)
-        ).all())
-    
-    
-    def update(self, attachment: Attachment, update_data: dict) -> Attachment:
-        """更新附件信息"""
-        for field, value in update_data.items():
-            setattr(attachment, field, value)
-        self.session.add(attachment)
-        self.session.commit()
-        self.session.refresh(attachment)
-        return attachment
-    
-    def delete(self, attachment: Attachment) -> None:
-        """删除附件"""
-        self.session.delete(attachment)
-        self.session.commit()
-
+        return self.find_many(historical_project_id=historical_project_id)

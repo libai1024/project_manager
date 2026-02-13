@@ -59,3 +59,11 @@ build/
 .DS_Store
 Thumbs.db
 
+# 数据目录（由Docker挂载）
+data/
+uploads/
+backups/
+
+# Claude Code
+.claude/
+
