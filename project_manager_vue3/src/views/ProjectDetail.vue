@@ -1750,37 +1750,37 @@ const isPdfFile = (filename: string): boolean => {
 
 const isTextFile = (filename: string): boolean => {
   const ext = filename.toLowerCase().split('.').pop()
-  return ['txt', 'md', 'json', 'xml', 'csv', 'js', 'ts', 'html', 'css', 'py', 'java', 'cpp', 'c', 'go', 'rs', 'php', 'rb', 'sh', 'yaml', 'yml', 'log'].includes(ext || '')
+  return ['txt', 'md', 'json', 'xml', 'csv', 'js', 'html', 'css', 'py', 'java', 'cpp', 'c', 'h', 'go', 'rs', 'php', 'rb', 'sh', 'yaml', 'yml', 'log', 'vue', 'jsx', 'tsx', 'swift', 'kt', 'sql', 'conf', 'ini'].includes(ext || '')
 }
 
 const isVideoFile = (filename: string): boolean => {
   const ext = filename.toLowerCase().split('.').pop()
-  return ['mp4', 'webm', 'ogg', 'avi', 'mov'].includes(ext || '')
+  return ['mp4', 'webm', 'avi', 'mov', 'mkv', 'flv', 'wmv', 'm4v', 'mpeg', 'mpg', '3gp', 'ogv', 'ts', 'mts', 'm2ts'].includes(ext || '')
 }
 
 const isAudioFile = (filename: string): boolean => {
   const ext = filename.toLowerCase().split('.').pop()
-  return ['mp3', 'wav', 'ogg', 'flac', 'aac'].includes(ext || '')
+  return ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a', 'wma', 'aiff', 'aif', 'au', 'opus'].includes(ext || '')
 }
 
 const isOfficeFile = (filename: string): boolean => {
   const ext = filename.toLowerCase().split('.').pop()
-  return ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext || '')
+  return ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'wps', 'et', 'dps', 'odt', 'ods', 'odp', 'rtf'].includes(ext || '')
 }
 
 const isWordFile = (filename: string): boolean => {
   const ext = filename.toLowerCase().split('.').pop()
-  return ['doc', 'docx'].includes(ext || '')
+  return ['doc', 'docx', 'wps', 'odt', 'rtf'].includes(ext || '')
 }
 
 const isExcelFile = (filename: string): boolean => {
   const ext = filename.toLowerCase().split('.').pop()
-  return ['xls', 'xlsx'].includes(ext || '')
+  return ['xls', 'xlsx', 'et', 'ods'].includes(ext || '')
 }
 
 const isPptFile = (filename: string): boolean => {
   const ext = filename.toLowerCase().split('.').pop()
-  return ['ppt', 'pptx'].includes(ext || '')
+  return ['ppt', 'pptx', 'dps', 'odp'].includes(ext || '')
 }
 
 // 预览URL缓存

@@ -5,7 +5,7 @@
 """
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.schemas.platform import PlatformRead
 from app.schemas.tag import TagRead
@@ -13,13 +13,20 @@ from app.schemas.tag import TagRead
 
 class ProjectBase(BaseModel):
     """项目基础信息"""
-    title: str = Field(max_length=200, description="项目标题")
+    title: str = Field(min_length=1, max_length=200, description="项目标题")
     student_name: Optional[str] = Field(default=None, max_length=100, description="学生姓名")
     platform_id: int = Field(description="平台ID")
     price: float = Field(default=0.0, ge=0, description="项目价格")
     actual_income: float = Field(default=0.0, ge=0, description="实际收入")
     github_url: Optional[str] = Field(default=None, max_length=500, description="GitHub地址")
     requirements: Optional[str] = Field(default=None, description="需求描述")
+
+    @field_validator('title')
+    @classmethod
+    def title_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('项目标题不能为空')
+        return v.strip()
 
 
 class ProjectCreate(ProjectBase):

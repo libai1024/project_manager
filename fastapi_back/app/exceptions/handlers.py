@@ -149,9 +149,10 @@ def setup_exception_handlers(app):
         处理所有未捕获的异常
         """
         # 记录完整错误堆栈
+        error_traceback = traceback.format_exc()
         logger.error(
             f"Unhandled Exception: path={request.url.path}, method={request.method}, "
-            f"error={str(exc)}",
+            f"error={str(exc)}\n{error_traceback}",
             exc_info=True
         )
 

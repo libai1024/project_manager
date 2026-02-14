@@ -30,10 +30,6 @@ class UserRepository(BaseRepository[User]):
         """根据用户名获取用户"""
         return self.find_one(username=username)
 
-    def list_all(self) -> List[User]:
-        """获取所有用户列表"""
-        return self.list_all()
-
     def exists_by_username(self, username: str) -> bool:
         """检查用户名是否存在"""
         return self.get_by_username(username) is not None

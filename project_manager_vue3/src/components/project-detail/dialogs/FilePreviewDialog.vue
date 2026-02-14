@@ -103,7 +103,7 @@ const getFileExtension = (filename: string): string => {
 const isImage = computed(() => {
   if (!props.attachment) return false
   const ext = getFileExtension(props.attachment.file_name)
-  return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(ext)
+  return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'heic', 'heif', 'tiff', 'tif', 'ico'].includes(ext)
 })
 
 const isPdf = computed(() => {
@@ -114,25 +114,25 @@ const isPdf = computed(() => {
 const isText = computed(() => {
   if (!props.attachment) return false
   const ext = getFileExtension(props.attachment.file_name)
-  return ['txt', 'md', 'json', 'xml', 'html', 'css', 'js', 'ts', 'vue', 'py', 'java', 'c', 'cpp', 'h'].includes(ext)
+  return ['txt', 'md', 'json', 'xml', 'html', 'css', 'js', 'vue', 'py', 'java', 'c', 'cpp', 'h', 'go', 'rs', 'php', 'rb', 'sh', 'jsx', 'tsx', 'swift', 'kt', 'sql', 'yaml', 'yml', 'ini', 'conf', 'log'].includes(ext)
 })
 
 const isVideo = computed(() => {
   if (!props.attachment) return false
   const ext = getFileExtension(props.attachment.file_name)
-  return ['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(ext)
+  return ['mp4', 'webm', 'mov', 'avi', 'mkv', 'flv', 'wmv', 'm4v', 'mpeg', 'mpg', '3gp', 'ogv', 'ts', 'mts', 'm2ts'].includes(ext)
 })
 
 const isAudio = computed(() => {
   if (!props.attachment) return false
   const ext = getFileExtension(props.attachment.file_name)
-  return ['mp3', 'wav', 'ogg', 'flac', 'aac'].includes(ext)
+  return ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a', 'wma', 'aiff', 'aif', 'au', 'opus'].includes(ext)
 })
 
 const isOffice = computed(() => {
   if (!props.attachment) return false
   const ext = getFileExtension(props.attachment.file_name)
-  return ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext)
+  return ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'wps', 'et', 'dps', 'odt', 'ods', 'odp', 'rtf'].includes(ext)
 })
 
 const handleDownload = () => {

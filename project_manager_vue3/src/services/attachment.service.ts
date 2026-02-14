@@ -46,10 +46,13 @@ export class AttachmentService {
    */
   static async downloadAttachment(id: number): Promise<void> {
     try {
-      const response = await attachmentApi.download(id)
-      const url = window.URL.createObjectURL(new Blob([response.data]))
+      // download 方法返回的已经是 Blob 对象
+      const blob = await attachmentApi.download(id)
+      // 直接使用 blob 创建 URL
+      const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
+      // 获取文件信息以获取原始文件名
       const attachment = await attachmentApi.get(id)
       link.setAttribute('download', attachment.file_name)
       document.body.appendChild(link)

@@ -6,6 +6,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from pydantic import field_validator
 
 if TYPE_CHECKING:
     from app.models.project import Project
@@ -35,7 +36,14 @@ class PlatformBase(SQLModel):
 
 class PlatformCreate(PlatformBase):
     """创建平台"""
-    pass
+    name: str = Field(min_length=1, max_length=100)
+
+    @field_validator('name')
+    @classmethod
+    def name_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('平台名称不能为空')
+        return v.strip()
 
 
 class PlatformUpdate(SQLModel):

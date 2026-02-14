@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 class AttachmentType(str, Enum):
     """附件类型"""
     REQUIREMENT = "需求"
+    PROJECT_REQUIREMENT = "项目需求"
+    PROJECT_SNAPSHOT = "项目快照"
     PROPOSAL = "开题报告"
     DRAFT = "初稿"
     FINAL = "终稿"

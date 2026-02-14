@@ -345,7 +345,16 @@ def get_media_type(filename: str) -> str:
         '.webp': 'image/webp',
         '.svg': 'image/svg+xml',
         '.ico': 'image/x-icon',
-        # 文档
+        '.heic': 'image/heic',
+        '.heif': 'image/heif',
+        '.tiff': 'image/tiff',
+        '.tif': 'image/tiff',
+        '.psd': 'image/vnd.adobe.photoshop',
+        '.raw': 'image/raw',
+        '.cr2': 'image/x-canon-cr2',
+        '.nef': 'image/x-nikon-nef',
+        '.dng': 'image/x-adobe-dng',
+        # 文档 - Microsoft Office
         '.pdf': 'application/pdf',
         '.doc': 'application/msword',
         '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -353,7 +362,16 @@ def get_media_type(filename: str) -> str:
         '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         '.ppt': 'application/vnd.ms-powerpoint',
         '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        # 文本
+        # 文档 - WPS Office
+        '.wps': 'application/vnd.ms-works',
+        '.et': 'application/vnd.ms-excel',
+        '.dps': 'application/vnd.ms-powerpoint',
+        # 文档 - OpenDocument
+        '.odt': 'application/vnd.oasis.opendocument.text',
+        '.ods': 'application/vnd.oasis.opendocument.spreadsheet',
+        '.odp': 'application/vnd.oasis.opendocument.presentation',
+        # 文档 - 其他
+        '.rtf': 'application/rtf',
         '.txt': 'text/plain',
         '.md': 'text/markdown',
         '.json': 'application/json',
@@ -361,36 +379,68 @@ def get_media_type(filename: str) -> str:
         '.csv': 'text/csv',
         # 代码文件
         '.js': 'text/javascript',
-        '.ts': 'text/typescript',
         '.html': 'text/html',
         '.css': 'text/css',
         '.py': 'text/x-python',
         '.java': 'text/x-java-source',
         '.cpp': 'text/x-c++src',
         '.c': 'text/x-csrc',
+        '.h': 'text/x-cheader',
         '.go': 'text/x-go',
         '.rs': 'text/x-rust',
         '.php': 'text/x-php',
         '.rb': 'text/x-ruby',
         '.sh': 'text/x-shellscript',
+        '.vue': 'text/x-vue',
+        '.jsx': 'text/javascript',
+        '.tsx': 'text/typescript',
+        '.swift': 'text/x-swift',
+        '.kt': 'text/x-kotlin',
+        '.scala': 'text/x-scala',
+        '.lua': 'text/x-lua',
+        '.sql': 'text/x-sql',
         # 压缩文件
         '.zip': 'application/zip',
         '.rar': 'application/x-rar-compressed',
         '.7z': 'application/x-7z-compressed',
         '.tar': 'application/x-tar',
         '.gz': 'application/gzip',
-        # 视频
+        '.bz2': 'application/x-bzip2',
+        '.xz': 'application/x-xz',
+        # 视频 - 主流格式
         '.mp4': 'video/mp4',
         '.webm': 'video/webm',
-        '.ogg': 'video/ogg',
         '.avi': 'video/x-msvideo',
         '.mov': 'video/quicktime',
-        # 音频
+        '.mkv': 'video/x-matroska',
+        '.flv': 'video/x-flv',
+        '.wmv': 'video/x-ms-wmv',
+        '.m4v': 'video/x-m4v',
+        '.mpeg': 'video/mpeg',
+        '.mpg': 'video/mpeg',
+        '.3gp': 'video/3gpp',
+        '.3g2': 'video/3gpp2',
+        '.ts': 'video/mp2t',
+        '.mts': 'video/mp2t',
+        '.m2ts': 'video/mp2t',
+        '.vob': 'video/dvd',
+        '.ogv': 'video/ogg',
+        # 音频 - 主流格式
         '.mp3': 'audio/mpeg',
         '.wav': 'audio/wav',
-        '.ogg': 'audio/ogg',
         '.flac': 'audio/flac',
         '.aac': 'audio/aac',
+        '.ogg': 'audio/ogg',  # ogg 音频
+        '.oga': 'audio/ogg',
+        '.m4a': 'audio/mp4',
+        '.wma': 'audio/x-ms-wma',
+        '.aiff': 'audio/aiff',
+        '.aif': 'audio/aiff',
+        '.au': 'audio/basic',
+        '.mid': 'audio/midi',
+        '.midi': 'audio/midi',
+        '.ape': 'audio/x-ape',
+        '.opus': 'audio/opus',
     }
     return media_types.get(extension, 'application/octet-stream')
 
@@ -402,28 +452,42 @@ async def download_attachment(
     current_user: User = Depends(get_current_active_user)
 ):
     """下载附件"""
-    from fastapi.responses import FileResponse
-    
+    from fastapi.responses import StreamingResponse
+    from urllib.parse import quote
+
     attachment_service = AttachmentService(session)
     attachment = attachment_service.get_attachment_by_id(
         attachment_id=attachment_id,
         current_user_id=current_user.id,
         is_admin=(current_user.role == "admin")
         )
-    
+
     if not os.path.exists(attachment.file_path):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="File not found"
         )
-    
+
     # 根据文件扩展名确定MIME类型
     media_type = get_media_type(attachment.file_name)
-    
-    return FileResponse(
-        path=attachment.file_path,
-        filename=attachment.file_name,
-        media_type=media_type
+
+    # 处理中文文件名编码
+    encoded_filename = quote(attachment.file_name, safe='')
+
+    def file_generator():
+        with open(attachment.file_path, 'rb') as f:
+            while True:
+                chunk = f.read(8192)
+                if not chunk:
+                    break
+                yield chunk
+
+    return StreamingResponse(
+        file_generator(),
+        media_type=media_type,
+        headers={
+            "Content-Disposition": f'attachment; filename="{encoded_filename}"; filename*=UTF-8\'\'{encoded_filename}'
+        }
     )
 
 
@@ -436,7 +500,8 @@ async def preview_attachment(
     """预览附件（返回文件内容用于在线预览）"""
     from fastapi.responses import Response, StreamingResponse
     import mimetypes
-    
+    from app.core.exceptions import NotFoundException
+
     try:
         attachment_service = AttachmentService(session)
         attachment = attachment_service.get_attachment_by_id(
@@ -444,92 +509,87 @@ async def preview_attachment(
             current_user_id=current_user.id,
             is_admin=(current_user.role == "admin")
         )
-        
-        if not attachment:
+    except NotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=e.msg
+        )
+
+    if not attachment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Attachment not found"
+        )
+
+    # 处理文件路径（可能是相对路径，需要转换为绝对路径）
+    file_path = attachment.file_path
+    if not os.path.isabs(file_path):
+        # 如果是相对路径，尝试相对于UPLOAD_DIR
+        file_path = os.path.join(UPLOAD_DIR, os.path.basename(file_path))
+
+    # 检查文件路径是否存在
+    if not file_path or not os.path.exists(file_path):
+        # 尝试原始路径
+        if os.path.exists(attachment.file_path):
+            file_path = attachment.file_path
+        else:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Attachment not found"
+                detail=f"File not found: {attachment.file_path}"
             )
-        
-        # 处理文件路径（可能是相对路径，需要转换为绝对路径）
-        file_path = attachment.file_path
-        if not os.path.isabs(file_path):
-            # 如果是相对路径，尝试相对于UPLOAD_DIR
-            file_path = os.path.join(UPLOAD_DIR, os.path.basename(file_path))
-        
-        # 检查文件路径是否存在
-        if not file_path or not os.path.exists(file_path):
-            # 尝试原始路径
-            if os.path.exists(attachment.file_path):
-                file_path = attachment.file_path
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"File not found: {attachment.file_path}"
-                )
-        
-        # 根据文件扩展名确定MIME类型
-        media_type = get_media_type(attachment.file_name)
-        
-        # 对于文本文件，直接读取并返回
-        if media_type.startswith('text/') or media_type in ['application/json', 'application/xml']:
+
+    # 根据文件扩展名确定MIME类型
+    media_type = get_media_type(attachment.file_name)
+
+    # 对于文本文件，直接读取并返回
+    if media_type.startswith('text/') or media_type in ['application/json', 'application/xml']:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return Response(content=content, media_type=media_type)
+        except UnicodeDecodeError:
+            # 如果UTF-8解码失败，尝试其他编码
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, 'r', encoding='gbk') as f:
                     content = f.read()
                 return Response(content=content, media_type=media_type)
-            except UnicodeDecodeError:
-                # 如果UTF-8解码失败，尝试其他编码
-                try:
-                    with open(file_path, 'r', encoding='gbk') as f:
-                        content = f.read()
-                    return Response(content=content, media_type=media_type)
-                except Exception as e:
-                    # 如果还是失败，返回二进制流
-                    print(f"Warning: Failed to read text file as text: {e}")
-                    pass
             except Exception as e:
-                print(f"Error reading text file: {e}")
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Failed to read file: {str(e)}"
-                )
-        
-        # 对于其他文件，返回文件流
-        def file_generator():
-            try:
-                with open(file_path, 'rb') as f:
-                    while True:
-                        chunk = f.read(8192)
-                        if not chunk:
-                            break
-                        yield chunk
-            except Exception as e:
-                print(f"Error reading file stream: {e}")
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Failed to read file stream: {str(e)}"
-                )
-        
-        # 处理文件名编码，避免中文字符导致的编码错误
-        from urllib.parse import quote
-        encoded_filename = quote(attachment.file_name, safe='')
-        
-        return StreamingResponse(
-            file_generator(),
-            media_type=media_type,
-            headers={
-                "Content-Disposition": f'inline; filename="{encoded_filename}"; filename*=UTF-8\'\'{encoded_filename}'
-            }
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Error in preview_attachment: {e}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+                # 如果还是失败，返回二进制流
+                print(f"Warning: Failed to read text file as text: {e}")
+                pass
+        except Exception as e:
+            print(f"Error reading text file: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to read file: {str(e)}"
+            )
+
+    # 对于其他文件，返回文件流
+    def file_generator():
+        try:
+            with open(file_path, 'rb') as f:
+                while True:
+                    chunk = f.read(8192)
+                    if not chunk:
+                        break
+                    yield chunk
+        except Exception as e:
+            print(f"Error reading file stream: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to read file stream: {str(e)}"
+            )
+
+    # 处理文件名编码，避免中文字符导致的编码错误
+    from urllib.parse import quote
+    encoded_filename = quote(attachment.file_name, safe='')
+
+    return StreamingResponse(
+        file_generator(),
+        media_type=media_type,
+        headers={
+            "Content-Disposition": f'inline; filename="{encoded_filename}"; filename*=UTF-8\'\'{encoded_filename}'
+        }
     )
 
 

@@ -20,40 +20,37 @@ export type FileIconType = 'pdf' | 'word' | 'excel' | 'ppt' | 'wps' | 'archive' 
  */
 export function getFileIcon(fileName: string): string {
   const ext = fileName.toLowerCase().split('.').pop() || ''
-  
+
   // PDF
   if (ext === 'pdf') return 'pdf'
-  
-  // Word
-  if (['doc', 'docx'].includes(ext)) return 'word'
-  
-  // Excel
-  if (['xls', 'xlsx', 'csv'].includes(ext)) return 'excel'
-  
-  // PowerPoint
-  if (['ppt', 'pptx'].includes(ext)) return 'ppt'
-  
-  // WPS
-  if (['wps', 'wpt', 'et', 'dps', 'wpp'].includes(ext)) return 'wps'
-  
+
+  // Word (包括 WPS 和 OpenDocument)
+  if (['doc', 'docx', 'wps', 'wpt', 'odt', 'rtf'].includes(ext)) return 'word'
+
+  // Excel (包括 WPS 和 OpenDocument)
+  if (['xls', 'xlsx', 'csv', 'et', 'ods'].includes(ext)) return 'excel'
+
+  // PowerPoint (包括 WPS 和 OpenDocument)
+  if (['ppt', 'pptx', 'dps', 'wpp', 'odp'].includes(ext)) return 'ppt'
+
   // 压缩包
   if (['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'zipx'].includes(ext)) return 'archive'
-  
-  // 图片
-  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'ico', 'tiff', 'tif'].includes(ext)) return 'image'
-  
-  // 视频
-  if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', 'm4v', '3gp'].includes(ext)) return 'video'
-  
-  // 音频
-  if (['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a', 'wma'].includes(ext)) return 'audio'
-  
+
+  // 图片 (包括 HEIC/HEIF 和 RAW 格式)
+  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'ico', 'tiff', 'tif', 'heic', 'heif', 'raw', 'cr2', 'nef', 'dng', 'psd'].includes(ext)) return 'image'
+
+  // 视频 (主流格式)
+  if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', 'm4v', '3gp', 'mpeg', 'mpg', 'ogv', 'ts', 'mts', 'm2ts', 'vob'].includes(ext)) return 'video'
+
+  // 音频 (主流格式)
+  if (['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a', 'wma', 'aiff', 'aif', 'au', 'opus', 'oga', 'ape', 'mid', 'midi'].includes(ext)) return 'audio'
+
   // 文本
-  if (['txt', 'md', 'rtf'].includes(ext)) return 'text'
-  
+  if (['txt', 'md', 'log', 'ini', 'conf', 'cfg'].includes(ext)) return 'text'
+
   // 代码文件
-  if (['js', 'ts', 'jsx', 'tsx', 'vue', 'html', 'css', 'scss', 'less', 'py', 'java', 'cpp', 'c', 'go', 'rs', 'php', 'rb', 'sh', 'bat', 'cmd', 'ps1', 'yaml', 'yml', 'json', 'xml'].includes(ext)) return 'code'
-  
+  if (['js', 'jsx', 'ts', 'tsx', 'vue', 'html', 'css', 'scss', 'less', 'py', 'java', 'cpp', 'c', 'h', 'go', 'rs', 'php', 'rb', 'sh', 'bat', 'cmd', 'ps1', 'yaml', 'yml', 'json', 'xml', 'swift', 'kt', 'scala', 'lua', 'sql'].includes(ext)) return 'code'
+
   return 'default'
 }
 
