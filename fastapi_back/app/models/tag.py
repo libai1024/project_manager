@@ -6,6 +6,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from pydantic import field_validator
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -64,14 +65,23 @@ class HistoricalProjectTag(SQLModel, table=True):
 # DTO类（保持向后兼容）
 class TagBase(SQLModel):
     """标签基础模型"""
-    name: str
+    name: str = Field(max_length=50)
     color: Optional[str] = "#409eff"
     description: Optional[str] = None
 
 
-class TagCreate(TagBase):
+class TagCreate(SQLModel):
     """创建标签"""
-    pass
+    name: str = Field(min_length=1, max_length=50)
+    color: Optional[str] = "#409eff"
+    description: Optional[str] = None
+
+    @field_validator('name')
+    @classmethod
+    def name_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('标签名称不能为空')
+        return v.strip()
 
 
 class TagUpdate(SQLModel):

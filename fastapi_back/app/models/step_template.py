@@ -4,6 +4,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from pydantic import field_validator
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -43,9 +44,16 @@ class StepTemplateItem(StepTemplateItemBase, table=True):
 
 
 class StepTemplateCreate(SQLModel):
-    name: str
+    name: str = Field(min_length=1, description="模板名称")
     description: Optional[str] = None
-    steps: List[str] = Field(description="步骤名称列表")
+    steps: List[str] = Field(default=[], description="步骤名称列表")
+
+    @field_validator('name')
+    @classmethod
+    def name_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('模板名称不能为空')
+        return v.strip()
 
 
 class StepTemplateUpdate(SQLModel):
