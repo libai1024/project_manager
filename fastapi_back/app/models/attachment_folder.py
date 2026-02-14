@@ -4,6 +4,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from pydantic import field_validator
 
 if TYPE_CHECKING:
     from app.models.project import Project
@@ -23,7 +24,7 @@ class AttachmentFolder(AttachmentFolderBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow})
-    
+
     # 关系
     project: Optional["Project"] = Relationship(back_populates="folders")
     historical_project: Optional["HistoricalProject"] = Relationship(back_populates="folders")
@@ -31,8 +32,15 @@ class AttachmentFolder(AttachmentFolderBase, table=True):
 
 
 class AttachmentFolderCreate(SQLModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
     description: Optional[str] = None
+
+    @field_validator('name')
+    @classmethod
+    def name_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('文件夹名称不能为空')
+        return v.strip()
 
 
 class AttachmentFolderUpdate(SQLModel):

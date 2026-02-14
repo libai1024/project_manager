@@ -4,6 +4,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
+from pydantic import field_validator
 
 if TYPE_CHECKING:
     from app.models.project import Project
@@ -14,8 +15,8 @@ class ProjectPartBase(SQLModel):
     """项目配件基础字段"""
     project_id: Optional[int] = Field(default=None, foreign_key="project.id", description="所属项目ID")
     historical_project_id: Optional[int] = Field(default=None, foreign_key="historicalproject.id", description="所属历史项目ID")
-    module_name: str = Field(description="功能模块名称")
-    core_component: str = Field(description="核心元器件")
+    module_name: str = Field(min_length=1, description="功能模块名称")
+    core_component: str = Field(min_length=1, description="核心元器件")
     remark: Optional[str] = Field(default=None, description="主要功能描述 / 备注")
     unit_price: float = Field(default=0.0, description="单价")
     quantity: int = Field(default=1, description="数量")
@@ -36,13 +37,27 @@ class ProjectPart(ProjectPartBase, table=True):
 
 class ProjectPartCreate(SQLModel):
     """创建配件清单条目（project_id 从路径参数获取，不需要在请求体中提供）"""
-    module_name: str = Field(description="功能模块名称")
-    core_component: str = Field(description="核心元器件")
+    module_name: str = Field(min_length=1, description="功能模块名称")
+    core_component: str = Field(min_length=1, description="核心元器件")
     remark: Optional[str] = Field(default=None, description="主要功能描述 / 备注")
     unit_price: float = Field(default=0.0, description="单价")
     quantity: int = Field(default=1, description="数量")
     purchase_link: Optional[str] = Field(default=None, description="购买链接")
     image_url: Optional[str] = Field(default=None, description="图片链接，用于展示，如果为空使用默认占位图")
+
+    @field_validator('module_name')
+    @classmethod
+    def module_name_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('模块名称不能为空')
+        return v.strip()
+
+    @field_validator('core_component')
+    @classmethod
+    def core_component_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('核心元器件不能为空')
+        return v.strip()
 
 
 class ProjectPartUpdate(SQLModel):

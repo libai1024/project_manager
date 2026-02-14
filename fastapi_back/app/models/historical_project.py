@@ -5,6 +5,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
+from pydantic import field_validator
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -87,7 +88,7 @@ class HistoricalProject(HistoricalProjectBase, table=True):
 
 class HistoricalProjectCreate(SQLModel):
     """创建历史项目"""
-    title: str
+    title: str = Field(min_length=1, max_length=200)
     student_name: Optional[str] = None
     platform_id: Optional[int] = None
     price: float = 0.0
@@ -101,6 +102,13 @@ class HistoricalProjectCreate(SQLModel):
     completion_date: Optional[datetime] = None
     notes: Optional[str] = None
     requirement_files: Optional[List[int]] = None  # 需求文件附件ID列表
+
+    @field_validator('title')
+    @classmethod
+    def title_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('项目标题不能为空')
+        return v.strip()
 
 
 class HistoricalProjectRead(HistoricalProjectBase):

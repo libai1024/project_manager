@@ -6,6 +6,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime, date
+from pydantic import field_validator
 
 if TYPE_CHECKING:
     from app.models.project import Project
@@ -35,17 +36,32 @@ class Todo(SQLModel, table=True):
 # DTO类（保持向后兼容）
 class TodoBase(SQLModel):
     """待办基础模型"""
-    description: str
+    description: str = Field(min_length=1)
     step_ids: List[int] = []
     completion_note: Optional[str] = None
     is_completed: bool = False
     target_date: Optional[datetime] = None
+
+    @field_validator('description')
+    @classmethod
+    def description_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('待办描述不能为空')
+        return v.strip()
 
 
 class TodoCreate(TodoBase):
     """创建待办"""
     project_id: Optional[int] = None
     historical_project_id: Optional[int] = None
+
+    # 重新定义验证器以确保在子类中生效
+    @field_validator('description')
+    @classmethod
+    def description_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('待办描述不能为空')
+        return v.strip()
 
 
 class TodoUpdate(SQLModel):
